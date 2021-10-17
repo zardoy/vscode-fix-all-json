@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import { extensionCtx, registerExtensionCommand } from 'vscode-framework'
+import { registerExtensionCommand, registerActiveDevelopmentCommand, registerNoop, showQuickPick } from 'vscode-framework'
 import vscode from 'vscode'
 import { builtinModules } from 'module'
 
@@ -31,11 +31,12 @@ export const activate = () => {
     //     },
     // )
 
-    //@ts-ignore
-    registerExtensionCommand('test', () => {
+    //
+
+    registerActiveDevelopmentCommand(() => {
         const document = vscode.window.activeTextEditor?.document
         if (document === undefined) return
-        const diagnostics = vscode.languages.getDiagnostics(document.uri)
+        const diagnostics = vscode.languages.getDiagnostics(document.uri).filter(({ source }) => source === 'ts')
         console.log(diagnostics)
     })
 
@@ -63,9 +64,10 @@ export const activate = () => {
     //     },
     // )
 
-    vscode.window.onDidChangeActiveTextEditor(async newEditor => {
-        if (newEditor === undefined) return
-        const { document } = newEditor
+    registerNoop('Fix json issues', async () => {
+        const currentEditor = vscode.window.activeTextEditor
+        if (currentEditor === undefined) return
+        const { document } = currentEditor
         // TODO add jsonc
         if (document.isClosed || !['json'].includes(document.languageId)) return
 
@@ -77,7 +79,7 @@ export const activate = () => {
         }
 
         console.time('process')
-        await newEditor.edit(edit => {
+        await currentEditor.edit(edit => {
             for (const problem of diagnostics)
                 switch (problem.message) {
                     // 514 code optionally check source=json
@@ -117,7 +119,6 @@ export const activate = () => {
                         break
                 }
         })
-        // if (problem.)
         console.timeEnd('process')
     })
 }

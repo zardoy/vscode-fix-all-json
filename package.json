@@ -7,12 +7,19 @@
         "Other"
     ],
     "contributes": {
-        "commands": [
-            {
-                "title": "test",
-                "command": "test"
+        "configuration": {
+            "properties": {
+                "fixTypes": {
+                    "type": "object",
+                    "properties": {
+                        "expectedComma": {
+                            "type": "boolean",
+                            "default": true
+                        }
+                    }
+                }
             }
-        ]
+        }
     },
     "activationEvents": [
         "onLanguage:json"
