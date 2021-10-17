@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "moduleResolution": "Node",
+        "isolatedModules": true,
+        "paths": {
+            "": "string",
+            "d": 55
+        }
+    },
+    "include": "."
+}

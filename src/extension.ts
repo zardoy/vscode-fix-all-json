@@ -4,38 +4,19 @@ import { registerExtensionCommand, registerActiveDevelopmentCommand, registerNoo
 import vscode from 'vscode'
 
 export const activate = () => {
-    const folder = vscode.workspace.workspaceFolders?.[0]
-    if (!folder) {
-        console.warn('no folder')
-
-        return
-    }
-
-    const tsPattern = new vscode.RelativePattern(folder, '*.{ts,mts,mjs}')
-    const jsonPattern = new vscode.RelativePattern(folder, '*.json')
-
     vscode.languages.registerCodeActionsProvider(
-        { language: 'typescript', pattern: tsPattern },
+        { language: 'jsonc' },
         {
             provideCodeActions(document, range, { diagnostics }) {
                 const problem = diagnostics[0]
-                if (problem?.code !== 2304) return
-                const module = /'(.+)'\.$/.exec(problem.message)?.[1]
-                if (!module) {
-                    console.warn("Can't extract module name", problem)
-                    return
-                }
-
-                if (!builtinModules.includes(module)) return
-                const quickFix = new vscode.CodeAction(`Import node module ${module}`, vscode.CodeActionKind.QuickFix)
-                quickFix.isPreferred = true
-                quickFix.diagnostics = [problem]
-                return [quickFix]
+                if (!problem || problem.message !== 'Incorrect type. Expected "array".') return
+                const stringIntoArrayFix = new vscode.CodeAction('Turn into array', vscode.CodeActionKind.QuickFix)
+                stringIntoArrayFix.isPreferred = true
+                stringIntoArrayFix.diagnostics = [problem]
+                stringIntoArrayFix.edit = new vscode.WorkspaceEdit()
+                stringIntoArrayFix.edit.replace(document.uri, problem.range, `[${document.getText(problem.range)}]`)
+                return [stringIntoArrayFix]
             },
-            // resolveCodeAction(action) {
-            //     console.log(action)
-            //     return action
-            // }
         },
     )
 
@@ -60,18 +41,6 @@ export const activate = () => {
         if (selectedSource === undefined) return
         // snippet like navigation?
     })
-
-    // vscode.languages.registerCodeActionsProvider(
-    //     { language: 'jsonc', pattern: jsonPattern },
-    //     {
-    //         provideCodeActions(document, range, context) {
-    //             // document.
-    //     const diagnostics = vscode.languages.getDiagnostics(document.uri)
-
-    //             return [new vscode.CodeAction('Turn string into array', vscode.CodeActionKind.QuickFix)]
-    //         },
-    //     },
-    // )
 
     registerNoop('Fix json issues', async () => {
         const currentEditor = vscode.window.activeTextEditor
