@@ -4,11 +4,6 @@ import { registerExtensionCommand, registerActiveDevelopmentCommand, registerNoo
 import vscode from 'vscode'
 
 export const activate = () => {
-    // registerExtensionCommand('open-extension-folder', (_, extensionId: string) => {
-    //     const path = vscode.extensions.getExtension(extensionId)!.extensionPath
-    //     console.log(path)
-    // })
-
     const folder = vscode.workspace.workspaceFolders?.[0]
     if (!folder) {
         console.warn('no folder')
@@ -65,18 +60,6 @@ export const activate = () => {
         if (selectedSource === undefined) return
         // snippet like navigation?
     })
-
-    // vscode.languages.registerCodeActionsProvider(
-    //     { language: 'json', pattern: jsonPattern },
-    //     {
-    //         provideCodeActions(document, range, context) {
-    //             // document.
-    //     const diagnostics = vscode.languages.getDiagnostics(document.uri)
-
-    //             return [new vscode.CodeAction('Turn string into array', vscode.CodeActionKind.QuickFix)]
-    //         },
-    //     },
-    // )
 
     // vscode.languages.registerCodeActionsProvider(
     //     { language: 'jsonc', pattern: jsonPattern },
