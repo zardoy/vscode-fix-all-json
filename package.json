@@ -1,0 +1,43 @@
+{
+    "name": "fix-all-json",
+    "displayName": "Fix All JSON",
+    "publisher": "zardoy",
+    "version": "0.1.0",
+    "categories": [
+        "Other"
+    ],
+    "contributes": {
+        "commands": [
+            {
+                "title": "test",
+                "command": "test"
+            }
+        ]
+    },
+    "activationEvents": [
+        "onLanguage:json"
+    ],
+    "capabilities": {
+        "untrustedWorkspaces": {
+            "supported": true
+        },
+        "virtualWorkspaces": true
+    },
+    "repository": "https://github.com/zardoy/vscode-fix-all-json.git",
+    "author": "Vitaly Turovsky <vital2580@icloud.com>",
+    "license": "MIT",
+    "private": true,
+    "scripts": {
+        "start": "cross-env DEBUG=vscode-framework:* vscode-framework start"
+    },
+    "devDependencies": {
+        "@types/node": "^16.11.0",
+        "@types/vscode": "^1.61.0",
+        "@zardoy/tsconfig": "^1.2.2",
+        "cross-env": "^7.0.3",
+        "eslint": "^7",
+        "eslint-plugin-zardoy-config": "^0.1.0",
+        "typescript": "^4.4.4",
+        "vscode-framework": "^0.0.7"
+    }
+}
