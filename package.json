@@ -9,14 +9,35 @@
     "contributes": {
         "configuration": {
             "properties": {
-                "fixTypes": {
+                "enableFixes": {
                     "type": "object",
+                    "description": "Which fixes to enable on save",
                     "properties": {
-                        "expectedComma": {
+                        "insertMissingCommas": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "removeTrailingCommas": {
+                            "type": "boolean",
+                            "description": "Remove trailing comma",
+                            "default": true
+                        },
+                        "removeComments": {
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "fixDoublequotes": {
                             "type": "boolean",
                             "default": true
                         }
-                    }
+                    },
+                    "default": {
+                        "insertMissingCommas": true,
+                        "removeTrailingCommas": true,
+                        "removeComments": false,
+                        "fixDoublequotes": true
+                    },
+                    "additionalProperties": false
                 }
             }
         }

@@ -16,9 +16,9 @@ All these fixes are configurable and can be disabled in settings:
 | ----------------------------------------------- | ---------------------------------------------------- |
 | Expected comma                                  | Insert missing comma                                 |
 | Trailing comma                                  | Remove trailing comma                                |
-| Comments are not permitted in JSON. (json only) | Remove the whole comment!                            |
+| Comments are not permitted in JSON. (json only) | Remove the whole comment (**disabled by default**)   |
 | Property keys must be doublequoted              | Remove quotes (if have `'` or **`**) and doublequote |
 
 ## Why not Prettier?
 
-[Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) as formatter does great work on fixing trailing semicolons and quotes problems, however this extension is much faster (see above), also it fixes more problems.
+[Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) as formatter does great work on fixing trailing semicolons and quotes problems, however this extension is much faster and aggressive overall.
