@@ -1,0 +1,12 @@
+{
+  "name": "typescript",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@types/lodash": "^4.14.175",
+    "escape-string-regexp": "^5.0.0",
+    "lodash": "^4.17.21"
+  }
+}

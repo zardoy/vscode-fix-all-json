@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
+import { builtinModules } from 'module'
 import { registerExtensionCommand, registerActiveDevelopmentCommand, registerNoop, showQuickPick } from 'vscode-framework'
 import vscode from 'vscode'
-import { builtinModules } from 'module'
 
 export const activate = () => {
     // registerExtensionCommand('open-extension-folder', (_, extensionId: string) => {
@@ -19,25 +19,51 @@ export const activate = () => {
     const tsPattern = new vscode.RelativePattern(folder, '*.{ts,mts,mjs}')
     const jsonPattern = new vscode.RelativePattern(folder, '*.json')
 
-    // vscode.languages.registerCodeActionsProvider(
-    //     { language: 'typescript', pattern: tsPattern },
-    //     {
-    //         provideCodeActions(document, range) {
-    //             return [
-    //                 new vscode.CodeAction('Import node module ', vscode.CodeActionKind.QuickFix)
-    //             ]
-    //         },
+    vscode.languages.registerCodeActionsProvider(
+        { language: 'typescript', pattern: tsPattern },
+        {
+            provideCodeActions(document, range, { diagnostics }) {
+                const problem = diagnostics[0]
+                if (problem?.code !== 2304) return
+                const module = /'(.+)'\.$/.exec(problem.message)?.[1]
+                if (!module) {
+                    console.warn("Can't extract module name", problem)
+                    return
+                }
 
-    //     },
-    // )
+                if (!builtinModules.includes(module)) return
+                const quickFix = new vscode.CodeAction(`Import node module ${module}`, vscode.CodeActionKind.QuickFix)
+                quickFix.isPreferred = true
+                quickFix.diagnostics = [problem]
+                return [quickFix]
+            },
+            // resolveCodeAction(action) {
+            //     console.log(action)
+            //     return action
+            // }
+        },
+    )
 
-    //
-
-    registerActiveDevelopmentCommand(() => {
+    // jumpy like fixes
+    registerNoop('Pick problems by source', async () => {
         const document = vscode.window.activeTextEditor?.document
         if (document === undefined) return
-        const diagnostics = vscode.languages.getDiagnostics(document.uri).filter(({ source }) => source === 'ts')
-        console.log(diagnostics)
+        // lodash-marker
+        const diagnosticsByGroup: Record<string, vscode.Diagnostic[]> = {}
+        const diagnostics = vscode.languages.getDiagnostics(document.uri)
+        for (const diagnostic of diagnostics) {
+            const source = diagnostic.source ?? 'No source'
+            if (!diagnosticsByGroup[source]) diagnosticsByGroup[source] = []
+            diagnosticsByGroup[source]!.push(diagnostic)
+        }
+
+        const selectedSource = await showQuickPick(
+            Object.entries(diagnosticsByGroup)
+                .sort(([, a], [, b]) => a.length - b.length)
+                .map(([source, { length }]) => ({ label: source, description: `${length}`, value: source })),
+        )
+        if (selectedSource === undefined) return
+        // snippet like navigation?
     })
 
     // vscode.languages.registerCodeActionsProvider(
