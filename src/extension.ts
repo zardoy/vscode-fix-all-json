@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import { registerActiveDevelopmentCommand, registerNoop, showQuickPick, getExtensionSetting } from 'vscode-framework'
+import { registerActiveDevelopmentCommand, registerNoop, showQuickPick, getExtensionSetting, registerExtensionCommand } from 'vscode-framework'
 import vscode from 'vscode'
 
 export const activate = () => {
@@ -49,7 +49,7 @@ export const activate = () => {
                         //     break
                         // }
 
-                        // let autoformatter handle it
+                        // more viable, let autoformatter handle correct placing it
                         edit.insert(new vscode.Position(line, character), ',')
                         break
                     }
@@ -87,33 +87,14 @@ export const activate = () => {
                         break
                 }
         })
+        if (getExtensionSetting('runFormatter')) await vscode.commands.executeCommand('editor.action.formatDocument')
         console.timeEnd('process')
     }
 
-    vscode.workspace.onWillSaveTextDocument(({ document, waitUntil }) => {
+    registerExtensionCommand('fixFile', async () => performFixes())
+
+    vscode.workspace.onWillSaveTextDocument(({ waitUntil }) => {
+        if (!getExtensionSetting('runOnSave')) return
         waitUntil(performFixes())
-    })
-    // user can just disable extension
-
-    // jumpy like fixes
-    registerNoop('Pick problems by source', async () => {
-        const document = vscode.window.activeTextEditor?.document
-        if (document === undefined) return
-        // lodash-marker
-        const diagnosticsByGroup: Record<string, vscode.Diagnostic[]> = {}
-        const diagnostics = vscode.languages.getDiagnostics(document.uri)
-        for (const diagnostic of diagnostics) {
-            const source = diagnostic.source ?? 'No source'
-            if (!diagnosticsByGroup[source]) diagnosticsByGroup[source] = []
-            diagnosticsByGroup[source]!.push(diagnostic)
-        }
-
-        const selectedSource = await showQuickPick(
-            Object.entries(diagnosticsByGroup)
-                .sort(([, a], [, b]) => a.length - b.length)
-                .map(([source, { length }]) => ({ label: source, description: `${length}`, value: source })),
-        )
-        if (selectedSource === undefined) return
-        // snippet like navigation?
     })
 }

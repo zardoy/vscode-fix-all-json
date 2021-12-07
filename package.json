@@ -1,12 +1,27 @@
 {
     "name": "fix-all-json",
     "displayName": "Fix All JSON",
+    "description": "Fix missing and trailing commas on save",
     "publisher": "zardoy",
-    "version": "0.1.0",
+    "version": "0.0.0-dev",
+    "preview": true,
+    "keywords": [
+        "json",
+        "auto insert",
+        "commas",
+        "auto fix",
+        "auto fix commas"
+    ],
     "categories": [
         "Other"
     ],
     "contributes": {
+        "commands": [
+            {
+                "command": "fixFile",
+                "title": "Fix Current JSON File"
+            }
+        ],
         "configuration": {
             "properties": {
                 "enableFixes": {
@@ -38,24 +53,21 @@
                         "fixDoubleQuotes": true
                     },
                     "additionalProperties": false
+                },
+                "runFormatter": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "runOnSave": {
+                    "type": "boolean",
+                    "default": true
                 }
             }
-        },
-        "codeActions": [
-            {
-                "actions": {
-                    "kind": "source",
-                    "description": "d",
-                    "title": "fix"
-                },
-                "languages": [
-                    "json"
-                ]
-            }
-        ]
+        }
     },
     "activationEvents": [
-        "onLanguage:json"
+        "onLanguage:json",
+        "onCommands"
     ],
     "capabilities": {
         "untrustedWorkspaces": {
