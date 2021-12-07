@@ -40,7 +40,19 @@
                     "additionalProperties": false
                 }
             }
-        }
+        },
+        "codeActions": [
+            {
+                "actions": {
+                    "kind": "source",
+                    "description": "d",
+                    "title": "fix"
+                },
+                "languages": [
+                    "json"
+                ]
+            }
+        ]
     },
     "activationEvents": [
         "onLanguage:json"

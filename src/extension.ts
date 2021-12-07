@@ -19,34 +19,13 @@ export const activate = () => {
         },
     )
 
-    // jumpy like fixes
-    registerNoop('Pick problems by source', async () => {
-        const document = vscode.window.activeTextEditor?.document
-        if (document === undefined) return
-        // lodash-marker
-        const diagnosticsByGroup: Record<string, vscode.Diagnostic[]> = {}
-        const diagnostics = vscode.languages.getDiagnostics(document.uri)
-        for (const diagnostic of diagnostics) {
-            const source = diagnostic.source ?? 'No source'
-            if (!diagnosticsByGroup[source]) diagnosticsByGroup[source] = []
-            diagnosticsByGroup[source]!.push(diagnostic)
-        }
-
-        const selectedSource = await showQuickPick(
-            Object.entries(diagnosticsByGroup)
-                .sort(([, a], [, b]) => a.length - b.length)
-                .map(([source, { length }]) => ({ label: source, description: `${length}`, value: source })),
-        )
-        if (selectedSource === undefined) return
-        // snippet like navigation?
-    })
-
-    registerActiveDevelopmentCommand(async () => {
+    const performFixes = async () => {
         const currentEditor = vscode.window.activeTextEditor
-        if (currentEditor === undefined) return
+        if (currentEditor === undefined || currentEditor.viewColumn === undefined) return
+
         const { document } = currentEditor
-        // TODO add jsonc
-        if (document.isClosed || !['json'].includes(document.languageId)) return
+        // TODO test jsonc
+        if (document.isClosed || !['json', 'jsonc'].includes(document.languageId)) return
 
         const diagnostics = vscode.languages.getDiagnostics(document.uri)
 
@@ -109,5 +88,32 @@ export const activate = () => {
                 }
         })
         console.timeEnd('process')
+    }
+
+    vscode.workspace.onWillSaveTextDocument(({ document, waitUntil }) => {
+        waitUntil(performFixes())
+    })
+    // user can just disable extension
+
+    // jumpy like fixes
+    registerNoop('Pick problems by source', async () => {
+        const document = vscode.window.activeTextEditor?.document
+        if (document === undefined) return
+        // lodash-marker
+        const diagnosticsByGroup: Record<string, vscode.Diagnostic[]> = {}
+        const diagnostics = vscode.languages.getDiagnostics(document.uri)
+        for (const diagnostic of diagnostics) {
+            const source = diagnostic.source ?? 'No source'
+            if (!diagnosticsByGroup[source]) diagnosticsByGroup[source] = []
+            diagnosticsByGroup[source]!.push(diagnostic)
+        }
+
+        const selectedSource = await showQuickPick(
+            Object.entries(diagnosticsByGroup)
+                .sort(([, a], [, b]) => a.length - b.length)
+                .map(([source, { length }]) => ({ label: source, description: `${length}`, value: source })),
+        )
+        if (selectedSource === undefined) return
+        // snippet like navigation?
     })
 }
