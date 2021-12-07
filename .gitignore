@@ -1,7 +1,6 @@
 # Learn more about paths on https://github.com/github/gitignore/blob/master/Node.gitignore
 
 node_modules
-.vscode-test-web
 
 build
 dist
@@ -20,5 +19,9 @@ experiment-*
 .DS_Store
 .env.local
 .env.*.local
+src/generated.ts
 
 .vscode-test
+.eslintcache
+Thumbs.db
+.idea/

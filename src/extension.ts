@@ -1,6 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import { builtinModules } from 'module'
-import { registerExtensionCommand, registerActiveDevelopmentCommand, registerNoop, showQuickPick } from 'vscode-framework'
+import { registerActiveDevelopmentCommand, registerNoop, showQuickPick, getExtensionSetting } from 'vscode-framework'
 import vscode from 'vscode'
 
 export const activate = () => {
@@ -42,7 +41,7 @@ export const activate = () => {
         // snippet like navigation?
     })
 
-    registerNoop('Fix json issues', async () => {
+    registerActiveDevelopmentCommand(async () => {
         const currentEditor = vscode.window.activeTextEditor
         if (currentEditor === undefined) return
         const { document } = currentEditor
@@ -57,27 +56,39 @@ export const activate = () => {
         }
 
         console.time('process')
+        const enableFixes = getExtensionSetting('enableFixes')
         await currentEditor.edit(edit => {
             for (const problem of diagnostics)
                 switch (problem.message) {
                     // 514 code optionally check source=json
                     case 'Expected comma': {
+                        if (!enableFixes.insertMissingCommas) continue
                         const { line, character } = problem.range.start
-                        edit.insert(new vscode.Position(line - 1, character + 1), ',')
+                        // if (character === document.lineAt(line).firstNonWhitespaceCharacterIndex) {
+                        //     console.log('one line')
+                        //     edit.insert(new vscode.Position(line - 1, document.lineAt(line).range.end.character), ',')
+                        //     break
+                        // }
+
+                        // let autoformatter handle it
+                        edit.insert(new vscode.Position(line, character), ',')
                         break
                     }
 
                     // these two are quite simple
                     // 519
                     case 'Trailing comma':
+                        if (!enableFixes.removeTrailingCommas) continue
                         edit.delete(problem.range)
                         break
 
                     // why no source and code?
                     case 'Comments are not permitted in JSON.':
+                        if (!enableFixes.removeComments) continue
                         edit.delete(problem.range)
                         break
                     case 'Property keys must be doublequoted': {
+                        if (!enableFixes.fixDoubleQuotes) continue
                         const { start, end } = problem.range
                         const problemWord = document.getText(problem.range)
                         const removeQuotes = /([`']).+\1/.exec(problemWord)

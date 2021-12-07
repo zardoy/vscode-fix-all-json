@@ -1,5 +1,5 @@
 {
     "development": {
-        "disableExtensions": true
+        "disableExtensions": false
     }
 }
