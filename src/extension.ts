@@ -1,5 +1,6 @@
+
 /* eslint-disable no-await-in-loop */
-import { registerActiveDevelopmentCommand, registerNoop, showQuickPick, getExtensionSetting, registerExtensionCommand } from 'vscode-framework'
+import { getExtensionSetting, registerExtensionCommand } from 'vscode-framework'
 import vscode from 'vscode'
 
 export const activate = () => {
@@ -36,13 +37,15 @@ export const activate = () => {
 
         console.time('process')
         const enableFixes = getExtensionSetting('enableFixes')
+        let needsFormatter = false
         await currentEditor.edit(edit => {
-            for (const problem of diagnostics)
+            for (const problem of diagnostics) {
+                const { line, character } = problem.range.start
+
                 switch (problem.message) {
                     // 514 code optionally check source=json
                     case 'Expected comma': {
                         if (!enableFixes.insertMissingCommas) continue
-                        const { line, character } = problem.range.start
                         // if (character === document.lineAt(line).firstNonWhitespaceCharacterIndex) {
                         //     console.log('one line')
                         //     edit.insert(new vscode.Position(line - 1, document.lineAt(line).range.end.character), ',')
@@ -51,20 +54,28 @@ export const activate = () => {
 
                         // more viable, let autoformatter handle correct placing it
                         edit.insert(new vscode.Position(line, character), ',')
+                        needsFormatter = true
                         break
                     }
 
-                    // these two are quite simple
+                    // these three are quite simple
                     // 519
                     case 'Trailing comma':
                         if (!enableFixes.removeTrailingCommas) continue
                         edit.delete(problem.range)
                         break
 
+                    // 515
+                    case 'Colon expected':
+                        if (!enableFixes.insertMissingColon) continue
+                        edit.insert(new vscode.Position(line, character), ':')
+                        needsFormatter = true
+                        break
                     // why no source and code?
                     case 'Comments are not permitted in JSON.':
                         if (!enableFixes.removeComments) continue
                         edit.delete(problem.range)
+                        needsFormatter = true
                         break
                     case 'Property keys must be doublequoted': {
                         if (!enableFixes.fixDoubleQuotes) continue
@@ -80,14 +91,17 @@ export const activate = () => {
 
                         edit.insert(new vscode.Position(start.line, start.character), '"')
                         edit.insert(new vscode.Position(end.line, end.character), '"')
+                        needsFormatter = true
                         break
                     }
 
                     default:
                         break
                 }
+            }
         })
-        if (getExtensionSetting('runFormatter')) await vscode.commands.executeCommand('editor.action.formatDocument')
+        // we're actually running formatter twice (before and after this)
+        if (needsFormatter && getExtensionSetting('runFormatter')) await vscode.commands.executeCommand('editor.action.formatDocument')
         console.timeEnd('process')
     }
 

@@ -32,6 +32,10 @@
                             "type": "boolean",
                             "default": true
                         },
+                        "insertMissingColon": {
+                            "type": "boolean",
+                            "default": true
+                        },
                         "removeTrailingCommas": {
                             "type": "boolean",
                             "description": "Remove trailing comma",
@@ -48,6 +52,7 @@
                     },
                     "default": {
                         "insertMissingCommas": true,
+                        "insertMissingColon": true,
                         "removeTrailingCommas": true,
                         "removeComments": false,
                         "fixDoubleQuotes": true

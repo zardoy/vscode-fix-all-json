@@ -15,6 +15,7 @@ All these fixes are configurable and can be disabled in settings:
 | Error Message                                   | Action                                               |
 | ----------------------------------------------- | ---------------------------------------------------- |
 | Expected comma                                  | Insert missing comma                                 |
+| Colon expected                                  | Insert missing colon                                 |
 | Trailing comma                                  | Remove trailing comma                                |
 | Comments are not permitted in JSON. (json only) | Remove the whole comment (**disabled by default**)   |
 | Property keys must be doublequoted              | Remove quotes (if have `'` or **`**) and doublequote |
