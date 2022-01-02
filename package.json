@@ -5,6 +5,7 @@
     "publisher": "zardoy",
     "version": "0.0.0-dev",
     "preview": true,
+    "web": true,
     "keywords": [
         "json",
         "auto insert",
@@ -85,7 +86,14 @@
     "license": "MIT",
     "private": true,
     "scripts": {
-        "start": "vscode-framework start"
+        "start": "vscode-framework start",
+        "start-web": "vscode-framework start --web",
+        "build": "vscode-framework build"
+    },
+    "pnpm": {
+        "overrides": {
+            "esbuild": "^0.14.10"
+        }
     },
     "devDependencies": {
         "@types/node": "^16.11.12",

@@ -1,6 +1,5 @@
 # Learn more about paths on https://github.com/github/gitignore/blob/master/Node.gitignore
 
-node_modules
 
 build
 dist
@@ -25,3 +24,10 @@ src/generated.ts
 .eslintcache
 Thumbs.db
 .idea/
+.vscode-test-web
+node_modules/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+yarn.lock
+package-lock.json

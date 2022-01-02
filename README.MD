@@ -25,6 +25,8 @@ All these fixes are configurable and can be disabled in settings:
 
 Note 2: this extension though doesn't autoquoting, there is [vscode-fix-json](https://github.com/oliversturm/vscode-fix-json) for that.
 
+> As stated in repo issues, this extensions not always work with complicated cases, so try to use it with simple and straightforward cases only.
+
 ## Why not Prettier?
 
 [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) as formatter does great work on fixing trailing semicolons and quotes problems, however this extension is much faster and more aggressive overall.
