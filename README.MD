@@ -4,7 +4,7 @@ Simple VSCode extension for fixing almost all annoying JSON (and even JSONC!) pr
 
 - supports virtual workspaces and web
 - small and no dependencies
-- simple and fast as it uses prepared diagnostics
+- simple and fast as it uses the errors you see
 
 <!-- TODO about code fixes -->
 
@@ -21,11 +21,11 @@ All these fixes are configurable and can be disabled in settings:
 | Property keys must be doublequoted              | Remove quotes (if have `'` or **`**) and doublequote |
 
 > Note: missing commas just placed before the error range. Its assumed you have autoformatter enabled to handle the "right placing"
-> In other words, it would run formatter on each save, but you can disable it via setting
+> In other words, it would run formatter on each save, however you can disable it via setting
 
-Note 2: this extension though doesn't autoquoting, there is [vscode-fix-json](https://github.com/oliversturm/vscode-fix-json) for that.
+Note 2: this extension though doesn't do *autoquoting*, there is [vscode-fix-json](https://github.com/oliversturm/vscode-fix-json) for this.
 
-> As stated in repo issues, this extensions not always work with complicated cases, so try to use it with simple and straightforward cases only.
+> Sometimes builtin JSON extension can be slow. In these cases you need to wait until errors are updated before fixing the file! We can do absolutely nothing about it.
 
 ## Why not Prettier?
 

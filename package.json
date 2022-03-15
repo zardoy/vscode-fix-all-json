@@ -10,8 +10,8 @@
         "json",
         "auto insert",
         "commas",
-        "auto fix",
-        "auto fix commas"
+        "insert",
+        "fix"
     ],
     "categories": [
         "Other"
