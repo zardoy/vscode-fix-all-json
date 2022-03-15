@@ -73,6 +73,7 @@
     },
     "activationEvents": [
         "onLanguage:json",
+        "onLanguage:jsonc",
         "onCommands"
     ],
     "capabilities": {
