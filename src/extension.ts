@@ -107,8 +107,8 @@ export const activate = () => {
 
     registerExtensionCommand('fixFile', async () => performFixes())
 
-    vscode.workspace.onWillSaveTextDocument(({ waitUntil }) => {
-        if (!getExtensionSetting('runOnSave')) return
+    vscode.workspace.onWillSaveTextDocument(({ waitUntil, reason }) => {
+        if (!getExtensionSetting('runOnSave') || reason === vscode.TextDocumentSaveReason.AfterDelay) return
         waitUntil(performFixes())
     })
 }
