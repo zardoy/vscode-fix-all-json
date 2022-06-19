@@ -20,8 +20,7 @@ All these fixes are configurable and can be disabled in settings:
 | Comments are not permitted in JSON. (json only) | Remove the whole comment (**disabled by default**)   |
 | Property keys must be doublequoted              | Remove quotes (if have `'` or **`**) and doublequote |
 
-> Note: missing commas just placed before the error range. Its assumed you have autoformatter enabled to handle the "right placing"
-> In other words, it would run formatter on each save, however you can disable it via setting
+> It would also run formatter on each save, however you can disable it via setting
 
 Note 2: this extension though doesn't do *autoquoting*, there is [vscode-fix-json](https://github.com/oliversturm/vscode-fix-json) for this.
 

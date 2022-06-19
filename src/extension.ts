@@ -1,6 +1,6 @@
-
 import * as vscode from 'vscode'
-import { getExtensionSetting, registerExtensionCommand } from 'vscode-framework'
+import { getExtensionSetting, registerActiveDevelopmentCommand, registerExtensionCommand } from 'vscode-framework'
+import expandWhitespaceSelection from './expandWhitespaceSelection'
 
 export const activate = () => {
     vscode.languages.registerCodeActionsProvider(
@@ -41,18 +41,12 @@ export const activate = () => {
             for (const problem of diagnostics) {
                 const { line, character } = problem.range.start
 
-                const pos = new vscode.Position(line, character);
+                const pos = new vscode.Position(line, character)
                 switch (problem.message) {
                     // 514 code optionally check source=json
                     case 'Expected comma': {
                         if (!enableFixes.insertMissingCommas) continue
-                        // if (character === document.lineAt(line).firstNonWhitespaceCharacterIndex) {
-                        //     console.log('one line')
-                        //     edit.insert(new vscode.Position(line - 1, document.lineAt(line).range.end.character), ',')
-                        //     break
-                        // }
-
-                        edit.insert(pos, ',')
+                        edit.insert(expandWhitespaceSelection(document, pos), ',')
                         needsFormatter = true
                         break
                     }
