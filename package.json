@@ -89,7 +89,8 @@
     "scripts": {
         "start": "vscode-framework start",
         "start-web": "vscode-framework start --web",
-        "build": "vscode-framework build"
+        "build": "vscode-framework build",
+        "lint": "eslint src/**"
     },
     "pnpm": {
         "overrides": {
@@ -101,9 +102,11 @@
         "@types/vscode": "^1.62.0",
         "@zardoy/tsconfig": "^1.2.2",
         "cross-env": "^7.0.3",
-        "eslint": "^7.32.0",
-        "eslint-plugin-zardoy-config": "^0.1.4",
-        "typescript": "^4.5.2",
+        "eslint": "^8.18.0",
+        "eslint-config-zardoy": "^0.2.11",
+        "typescript": "^4.5.2"
+    },
+    "dependencies": {
         "vscode-framework": "^0.0.18"
     }
 }

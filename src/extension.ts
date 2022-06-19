@@ -1,7 +1,6 @@
 
-/* eslint-disable no-await-in-loop */
+import * as vscode from 'vscode'
 import { getExtensionSetting, registerExtensionCommand } from 'vscode-framework'
-import vscode from 'vscode'
 
 export const activate = () => {
     vscode.languages.registerCodeActionsProvider(
@@ -42,6 +41,7 @@ export const activate = () => {
             for (const problem of diagnostics) {
                 const { line, character } = problem.range.start
 
+                const pos = new vscode.Position(line, character);
                 switch (problem.message) {
                     // 514 code optionally check source=json
                     case 'Expected comma': {
@@ -52,8 +52,7 @@ export const activate = () => {
                         //     break
                         // }
 
-                        // more viable, let autoformatter handle correct placing it
-                        edit.insert(new vscode.Position(line, character), ',')
+                        edit.insert(pos, ',')
                         needsFormatter = true
                         break
                     }
@@ -68,7 +67,7 @@ export const activate = () => {
                     // 515
                     case 'Colon expected':
                         if (!enableFixes.insertMissingColon) continue
-                        edit.insert(new vscode.Position(line, character), ':')
+                        edit.insert(pos, ':')
                         needsFormatter = true
                         break
                     // why no source and code?
