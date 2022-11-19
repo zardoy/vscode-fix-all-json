@@ -68,7 +68,7 @@
                     "type": "boolean",
                     "default": true
                 },
-                "insertCommaAfterEnnter": {
+                "insertCommaAfterEnter": {
                     "type": "boolean",
                     "default": true,
                     "description": "Insert comma after \"Enter\". Working only if last symbol is `}`, `]`, `\"` or number"
