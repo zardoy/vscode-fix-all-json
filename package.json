@@ -3,7 +3,7 @@
     "displayName": "Fix All JSON",
     "description": "Fix missing and trailing commas on save",
     "publisher": "zardoy",
-    "version": "0.0.0-dev",
+    "version": "0.0.1",
     "preview": true,
     "web": true,
     "keywords": [
@@ -67,6 +67,11 @@
                 "runOnSave": {
                     "type": "boolean",
                     "default": true
+                },
+                "insertComma": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Insert comma after `}`, `]`, `\"` or number"
                 }
             }
         }

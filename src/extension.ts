@@ -2,6 +2,8 @@
 import * as vscode from 'vscode'
 import { getExtensionSetting, registerExtensionCommand } from 'vscode-framework'
 
+const isNumber = (text: string) => !Number.isNaN(Number(text));
+
 export const activate = () => {
     vscode.languages.registerCodeActionsProvider(
         { language: 'jsonc' },
@@ -110,4 +112,81 @@ export const activate = () => {
         if (!getExtensionSetting('runOnSave') || reason === vscode.TextDocumentSaveReason.AfterDelay) return
         waitUntil(performFixes())
     })
+
+    vscode.workspace.onDidChangeTextDocument(
+        ({ contentChanges, document }) => {
+            if (!getExtensionSetting("insertComma")) {
+                return;
+            }
+
+            if (
+                document.languageId !== "json" &&
+                document.languageId !== "jsonc"
+            ) {
+                return;
+            }
+
+            if (contentChanges.length === 0) {
+                return;
+            }
+
+            const editor = vscode.window.activeTextEditor;
+
+            if (
+                document.uri !== editor?.document.uri ||
+                ["output"].includes(editor.document.uri.scheme)
+            ) {
+                return;
+            }
+            if (
+                vscode.workspace.fs.isWritableFileSystem(
+                    document.uri.scheme
+                ) === false
+            ) {
+                return;
+            }
+
+            const content = contentChanges[0];
+
+            if (!content) {
+                return;
+            }
+
+            if (
+                !content.text.startsWith("\n") &&
+                !content.text.startsWith("\r\n")
+            ) {
+                return;
+            }
+
+            const prevLinePosition = document.positionAt(content.rangeOffset);
+            const prevLine = document.lineAt(prevLinePosition);
+            const prevLineText = prevLine.text;
+
+            if (prevLineText.trim().startsWith("//")) {
+                return;
+            }
+
+            const prevLineLastChar = prevLineText.at(-1);
+
+            if (!prevLineLastChar) {
+                return;
+            }
+
+            const isNextLineEmpty =
+                document.lineAt(prevLinePosition.line + 1).text.trim() === "";
+
+            const isMatchValue =
+                prevLineLastChar === "}" ||
+                prevLineLastChar === '"' ||
+                prevLineLastChar === ']' ||
+                isNumber(prevLineLastChar);
+
+            if (isMatchValue && isNextLineEmpty) {
+                editor.edit((edit) => {
+                    edit.insert(prevLinePosition, ",");
+                });
+            }
+        }
+    );
 }
