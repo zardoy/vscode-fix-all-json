@@ -3,7 +3,7 @@
     "displayName": "Fix All JSON",
     "description": "Fix missing and trailing commas on save",
     "publisher": "zardoy",
-    "version": "0.0.1",
+    "version": "0.0.0-dev",
     "preview": true,
     "web": true,
     "keywords": [
