@@ -115,7 +115,7 @@ export const activate = () => {
 
     vscode.workspace.onDidChangeTextDocument(
         ({ contentChanges, document }) => {
-            if (!getExtensionSetting("insertComma")) {
+            if (!getExtensionSetting("insertMissingCommaOnEnter")) {
                 return;
             }
 
