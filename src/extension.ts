@@ -131,6 +131,8 @@ export const activate = () => {
                 return;
             }
 
+            contentChanges = [...contentChanges].sort((a, b) => a.range.start.compareTo(b.range.start))
+
             const editor = vscode.window.activeTextEditor;
 
             if (
@@ -149,7 +151,7 @@ export const activate = () => {
             }
 
             void editor.edit((edit) => {
-                for (const content of contentChanges) {
+                for (const [i, content] of contentChanges.entries()) {
                     if (
                         !content.text.startsWith("\n") &&
                         !content.text.startsWith("\r\n")
@@ -159,7 +161,7 @@ export const activate = () => {
 
                     const prevLinePosition = content.range.start;
 
-                    const prevLine = document.lineAt(prevLinePosition);
+                    const prevLine = document.lineAt(prevLinePosition.line + i);
                     const prevLineText = prevLine.text;
 
                     const prevLineLastChar = prevLineText.at(-1);
