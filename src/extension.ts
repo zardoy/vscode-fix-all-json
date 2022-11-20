@@ -147,57 +147,55 @@ export const activate = () => {
                 return;
             }
 
-            const content = contentChanges[0];
+            editor.edit((edit) => {
+                contentChanges.forEach(async (content) => {
+                    if (
+                        !content.text.startsWith("\n") &&
+                        !content.text.startsWith("\r\n")
+                    ) {
+                        return;
+                    }
 
-            if (!content) {
-                return;
-            }
+                    const prevLinePosition = document.positionAt(content.rangeOffset);
 
-            if (
-                !content.text.startsWith("\n") &&
-                !content.text.startsWith("\r\n")
-            ) {
-                return;
-            }
+                    const prevLine = document.lineAt(prevLinePosition);
+                    const prevLineText = prevLine.text;
 
-            const prevLinePosition = document.positionAt(content.rangeOffset);
-            const prevLine = document.lineAt(prevLinePosition);
-            const prevLineText = prevLine.text;
+                    const prevLineLastChar = prevLineText.at(-1);
 
-            const prevLineLastChar = prevLineText.at(-1);
+                    if (!prevLineLastChar) {
+                        return;
+                    }
 
-            if (!prevLineLastChar) {
-                return;
-            }
+                    if (document.languageId === 'jsonc') {
+                        if (prevLineText.trim().startsWith("//") || prevLineText.trim().startsWith("/*")) {
+                            return;
+                        }
 
-            if (document.languageId === 'jsonc') {
-                if (prevLineText.trim().startsWith("//") || prevLineText.trim().startsWith("/*")) {
-                    return;
-                }
+                        const textWithouComments = stripJsonComments(document.getText());
+                        const prevLineTextWithoutComments = getTextByLine(textWithouComments, prevLine.lineNumber)?.trim();
 
-                const textWithouComments = stripJsonComments(document.getText());
-                const prevLineTextWithoutComments = getTextByLine(textWithouComments, prevLinePosition.line)?.trim();
+                        if (prevLineTextWithoutComments !== prevLineText.trim()) {
+                            return;
+                        }
+                    }
 
+                    const isCurrentLineEmpty =
+                        document.lineAt(prevLine.lineNumber + 1).text.trim() === "";
 
-                if (prevLineTextWithoutComments !== prevLineText.trim()) {
-                  return;
-                }
-            }
+                    const isMatchValue =
+                        prevLineLastChar === "}" ||
+                        prevLineLastChar === '"' ||
+                        prevLineLastChar === ']' ||
+                        isNumber(prevLineLastChar);
 
-            const isNextLineEmpty =
-                document.lineAt(prevLinePosition.line + 1).text.trim() === "";
-
-            const isMatchValue =
-                prevLineLastChar === "}" ||
-                prevLineLastChar === '"' ||
-                prevLineLastChar === ']' ||
-                isNumber(prevLineLastChar);
-
-            if (isMatchValue && isNextLineEmpty) {
-                editor.edit((edit) => {
-                    edit.insert(prevLinePosition, ",");
-                });
-            }
+                    if (isMatchValue && isCurrentLineEmpty) {
+                        // In multicursor mode last character position is broken when I use prevLinePosition, IDK why
+                        const lastCharacterPosition = new vscode.Position(prevLine.lineNumber, prevLine.range.end.character);
+                        edit.insert(lastCharacterPosition, ",");
+                    }
+                })
+            });
         }
     );
 }
