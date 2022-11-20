@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 
 import * as vscode from 'vscode'
 import { getExtensionSetting, registerExtensionCommand } from 'vscode-framework'
@@ -139,6 +140,7 @@ export const activate = () => {
             ) {
                 return;
             }
+
             if (
                 vscode.workspace.fs.isWritableFileSystem(
                     document.uri.scheme
@@ -147,13 +149,13 @@ export const activate = () => {
                 return;
             }
 
-            editor.edit((edit) => {
-                contentChanges.forEach(async (content) => {
+            void editor.edit((edit) => {
+                for (const content of contentChanges) {
                     if (
                         !content.text.startsWith("\n") &&
                         !content.text.startsWith("\r\n")
                     ) {
-                        return;
+                        continue;
                     }
 
                     const prevLinePosition = document.positionAt(content.rangeOffset);
@@ -164,19 +166,19 @@ export const activate = () => {
                     const prevLineLastChar = prevLineText.at(-1);
 
                     if (!prevLineLastChar) {
-                        return;
+                        continue;
                     }
 
                     if (document.languageId === 'jsonc') {
                         if (prevLineText.trim().startsWith("//") || prevLineText.trim().startsWith("/*")) {
-                            return;
+                            continue;
                         }
 
                         const textWithouComments = stripJsonComments(document.getText());
                         const prevLineTextWithoutComments = getTextByLine(textWithouComments, prevLine.lineNumber)?.trim();
 
                         if (prevLineTextWithoutComments !== prevLineText.trim()) {
-                            return;
+                            continue;
                         }
                     }
 
@@ -194,7 +196,7 @@ export const activate = () => {
                         const lastCharacterPosition = new vscode.Position(prevLine.lineNumber, prevLine.range.end.character);
                         edit.insert(lastCharacterPosition, ",");
                     }
-                })
+                }
             });
         }
     );
