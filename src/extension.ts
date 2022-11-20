@@ -122,8 +122,7 @@ export const activate = () => {
             }
 
             if (
-                document.languageId !== "json" &&
-                document.languageId !== "jsonc"
+                !vscode.languages.match(['json', 'jsonc'], document)
             ) {
                 return;
             }
@@ -158,7 +157,7 @@ export const activate = () => {
                         continue;
                     }
 
-                    const prevLinePosition = document.positionAt(content.rangeOffset);
+                    const prevLinePosition = content.range.start;
 
                     const prevLine = document.lineAt(prevLinePosition);
                     const prevLineText = prevLine.text;
