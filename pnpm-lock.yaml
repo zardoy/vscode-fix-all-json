@@ -10,10 +10,12 @@ specifiers:
   cross-env: ^7.0.3
   eslint: ^8.18.0
   eslint-config-zardoy: ^0.2.11
+  strip-json-comments: ^5.0.0
   typescript: ^4.5.2
   vscode-framework: ^0.0.18
 
 dependencies:
+  strip-json-comments: 5.0.0
   vscode-framework: 0.0.18_l3izlp2w2o7lntemhxm5k54lqq
 
 devDependencies:
@@ -3763,6 +3765,11 @@ packages:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
     dev: true
+
+  /strip-json-comments/5.0.0:
+    resolution: {integrity: sha512-V1LGY4UUo0jgwC+ELQ2BNWfPa17TIuwBLg+j1AA/9RPzKINl1lhxVEu2r+ZTTO8aetIsUzE5Qj6LMSBkoGYKKw==}
+    engines: {node: '>=14.16'}
+    dev: false
 
   /supports-color/5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}

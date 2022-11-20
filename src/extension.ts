@@ -1,8 +1,9 @@
 
 import * as vscode from 'vscode'
 import { getExtensionSetting, registerExtensionCommand } from 'vscode-framework'
+import stripJsonComments from 'strip-json-comments'
+import { getTextByLine, isNumber } from './utils';
 
-const isNumber = (text: string) => !Number.isNaN(Number(text));
 
 export const activate = () => {
     vscode.languages.registerCodeActionsProvider(
@@ -163,14 +164,24 @@ export const activate = () => {
             const prevLine = document.lineAt(prevLinePosition);
             const prevLineText = prevLine.text;
 
-            if (prevLineText.trim().startsWith("//")) {
-                return;
-            }
-
             const prevLineLastChar = prevLineText.at(-1);
 
             if (!prevLineLastChar) {
                 return;
+            }
+
+            if (document.languageId === 'jsonc') {
+                if (prevLineText.trim().startsWith("//") || prevLineText.trim().startsWith("/*")) {
+                    return;
+                }
+
+                const textWithouComments = stripJsonComments(document.getText());
+                const prevLineTextWithoutComments = getTextByLine(textWithouComments, prevLinePosition.line)?.trim();
+
+
+                if (prevLineTextWithoutComments !== prevLineText.trim()) {
+                  return;
+                }
             }
 
             const isNextLineEmpty =
