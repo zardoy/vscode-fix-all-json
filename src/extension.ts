@@ -167,17 +167,15 @@ export const activate = () => {
                         continue;
                     }
 
-                    if (document.languageId === 'jsonc') {
-                        if (prevLineText.trim().startsWith("//") || prevLineText.trim().startsWith("/*")) {
-                            continue;
-                        }
+                    if (prevLineText.trim().startsWith("//") || prevLineText.trim().startsWith("/*")) {
+                        continue;
+                    }
 
-                        const textWithouComments = stripJsonComments(document.getText());
-                        const prevLineTextWithoutComments = getTextByLine(textWithouComments, prevLine.lineNumber)?.trim();
+                    const textWithouComments = stripJsonComments(document.getText());
+                    const prevLineTextWithoutComments = getTextByLine(textWithouComments, prevLine.lineNumber)?.trim();
 
-                        if (prevLineTextWithoutComments !== prevLineText.trim()) {
-                            continue;
-                        }
+                    if (prevLineTextWithoutComments !== prevLineText.trim()) {
+                        continue;
                     }
 
                     const isCurrentLineEmpty =
