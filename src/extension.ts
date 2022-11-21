@@ -175,7 +175,7 @@ export const activate = () => {
                         continue;
                     }
 
-                    const textWithouComments = stripJsonComments(document.getText());
+                    const textWithoutComments = stripJsonComments(document.getText());
                     const prevLineTextWithoutComments = getTextByLine(textWithouComments, prevLine.lineNumber)?.trim();
 
                     if (prevLineTextWithoutComments !== prevLineText.trim()) {
