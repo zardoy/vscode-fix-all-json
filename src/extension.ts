@@ -3,7 +3,7 @@
 import * as vscode from 'vscode'
 import { getExtensionSetting, registerExtensionCommand } from 'vscode-framework'
 import stripJsonComments from 'strip-json-comments'
-import { getTextByLine, isNumber } from './utils';
+import { getTextByLine, isContainEoL, isNumber } from './utils';
 
 
 export const activate = () => {
@@ -150,16 +150,13 @@ export const activate = () => {
                 return;
             }
 
-            void editor.edit((edit) => {
-                for (const [i, content] of contentChanges.entries()) {
-                    if (
-                        !content.text.startsWith("\n") &&
-                        !content.text.startsWith("\r\n")
-                    ) {
-                        continue;
-                    }
+            if (contentChanges.some((change) => !isContainEoL(change.text))) {
+                return;
+            }
 
-                    const prevLinePosition = content.range.start;
+            void editor.edit((edit) => {
+                for (const [i, change] of contentChanges.entries()) {
+                    const prevLinePosition = change.range.start;
 
                     const prevLine = document.lineAt(prevLinePosition.line + i);
                     const prevLineText = prevLine.text;
