@@ -183,7 +183,7 @@ export const activate = () => {
                         currentLineText.trim() === "";
                     const isCurrentLineStartsWithComment = startsWithComment(currentLineText);
 
-                    if (!isCurrentLineEmpty && !isCurrentLineBeforeComment) {
+                    if (!isCurrentLineEmpty && !isCurrentLineStartsWithComment) {
                         continue;
                     }
 
