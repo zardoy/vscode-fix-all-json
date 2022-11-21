@@ -4,7 +4,7 @@ import * as vscode from 'vscode'
 import { getExtensionSetting, registerExtensionCommand } from 'vscode-framework'
 import stripJsonComments from 'strip-json-comments'
 import { oneOf } from '@zardoy/utils'
-import { getTextByLine, isContainEoL, isNumber } from './utils';
+import { getTextByLine, isContainEoL, isNumber, startsWithComment } from './utils';
 
 export const activate = () => {
     vscode.languages.registerCodeActionsProvider(
@@ -171,7 +171,7 @@ export const activate = () => {
                         continue;
                     }
 
-                    if (prevLineText.trim().startsWith("//") || prevLineText.trim().startsWith("/*")) {
+                    if (startsWithComment(prevLine.text.trim())) {
                         continue;
                     }
 
@@ -182,8 +182,11 @@ export const activate = () => {
                         continue;
                     }
 
+                    const currentLineText = document.lineAt(prevLine.lineNumber + 1).text.trim();
+
                     const isCurrentLineEmpty =
-                        document.lineAt(prevLine.lineNumber + 1).text.trim() === "";
+                        currentLineText.trim() === "";
+                    const isCurrentLineBeforeComment = startsWithComment(currentLineText);
 
                     const isMatchValue =
                         prevLineLastChar === "}" ||
@@ -191,7 +194,8 @@ export const activate = () => {
                         prevLineLastChar === ']' ||
                         isNumber(prevLineLastChar);
 
-                    if (isMatchValue && isCurrentLineEmpty) {
+
+                    if (isMatchValue && (isCurrentLineEmpty || isCurrentLineBeforeComment)) {
                         // In multicursor mode last character position is broken when I use prevLinePosition, IDK why
                         const lastCharacterPosition = new vscode.Position(prevLine.lineNumber, prevLine.range.end.character);
                         edit.insert(lastCharacterPosition, ",");

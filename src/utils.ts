@@ -1,4 +1,4 @@
-export function getTextByLine(text:string, line: number) {
+export function getTextByLine(text: string, line: number) {
     return text.split("\n").at(line);
 }
 
@@ -8,4 +8,8 @@ export function isNumber(text: string) {
 
 export function isContainEoL(text: string) {
     return text.includes('\n') || text.includes('\n\r')
+}
+
+export function startsWithComment(text: string) {
+    return text.startsWith('//') || text.startsWith('/*');
 }
