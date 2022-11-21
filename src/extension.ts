@@ -158,6 +158,14 @@ export const activate = () => {
                 return;
             }
 
+            let temporaryFileWithoutComments: string;
+
+            const getFileContentWithoutComments = () => {
+                temporaryFileWithoutComments = temporaryFileWithoutComments || stripJsonComments(document.getText());
+
+                return temporaryFileWithoutComments;
+            }
+
             void editor.edit((edit) => {
                 for (const [i, change] of contentChanges.entries()) {
                     const prevLinePosition = change.range.start;
@@ -175,10 +183,13 @@ export const activate = () => {
                         continue;
                     }
 
-                    const textWithouComments = stripJsonComments(document.getText());
-                    const prevLineTextWithoutComments = getTextByLine(textWithouComments, prevLine.lineNumber)?.trim();
+                    const isMatchValue =
+                        prevLineLastChar === "}" ||
+                        prevLineLastChar === '"' ||
+                        prevLineLastChar === ']' ||
+                        isNumber(prevLineLastChar);
 
-                    if (prevLineTextWithoutComments !== prevLineText.trim()) {
+                    if (!isMatchValue) {
                         continue;
                     }
 
@@ -188,18 +199,18 @@ export const activate = () => {
                         currentLineText.trim() === "";
                     const isCurrentLineBeforeComment = startsWithComment(currentLineText);
 
-                    const isMatchValue =
-                        prevLineLastChar === "}" ||
-                        prevLineLastChar === '"' ||
-                        prevLineLastChar === ']' ||
-                        isNumber(prevLineLastChar);
-
-
-                    if (isMatchValue && (isCurrentLineEmpty || isCurrentLineBeforeComment)) {
-                        // In multicursor mode last character position is broken when I use prevLinePosition, IDK why
-                        const lastCharacterPosition = new vscode.Position(prevLine.lineNumber, prevLine.range.end.character);
-                        edit.insert(lastCharacterPosition, ",");
+                    if (!isCurrentLineEmpty && !isCurrentLineBeforeComment) {
+                        continue;
                     }
+
+                    const fileContentWithoutComments = getFileContentWithoutComments();
+                    const prevLineTextWithoutComments = getTextByLine(fileContentWithoutComments, prevLine.lineNumber)?.trim();
+
+                    if (prevLineTextWithoutComments !== prevLineText.trim()) {
+                        continue;
+                    }
+
+                    edit.insert(prevLine.range.end, ",");
                 }
             }, { undoStopAfter: false, undoStopBefore: false });
         }
