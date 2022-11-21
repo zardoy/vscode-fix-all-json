@@ -3,5 +3,5 @@ export function getTextByLine(text:string, line: number) {
 }
 
 export function isNumber(text: string) {
-    return !Number.isNaN(Number(text));
+    return !Number.isNaN(Number.parseInt(text, 10));
 }
