@@ -192,7 +192,7 @@ export const activate = () => {
 
                     const isComment = prevLineTextWithoutComments.trim() !== prevLineText.trim();
 
-                    const prevLineLastChar = isComment ? prevLineTextWithoutComments.trimEnd().at(-1) : prevLineText.at(-1);
+                    const prevLineLastChar = isComment ? prevLineTextWithoutComments.trim().at(-1) : prevLineText.at(-1);
 
                     if (!prevLineLastChar) {
                         continue;
