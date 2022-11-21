@@ -173,12 +173,6 @@ export const activate = () => {
                     const prevLine = document.lineAt(prevLinePosition.line + i);
                     const prevLineText = prevLine.text;
 
-                    const prevLineLastChar = prevLineText.at(-1);
-
-                    if (!prevLineLastChar) {
-                        continue;
-                    }
-
                     if (startsWithComment(prevLine.text.trim())) {
                         continue;
                     }
@@ -198,13 +192,19 @@ export const activate = () => {
 
                     const isComment = prevLineTextWithoutComments.trim() !== prevLineText.trim();
 
+                    const prevLineLastChar = isComment ? prevLineTextWithoutComments.trimEnd().at(-1) : prevLineText.at(-1);
+
+                    if (!prevLineLastChar) {
+                        continue;
+                    }
+
                     const isMatchValue =
                         prevLineLastChar === "}" ||
                         prevLineLastChar === '"' ||
                         prevLineLastChar === ']' ||
                         isNumber(prevLineLastChar);
 
-                    if (!isMatchValue && !isComment) {
+                    if (!isMatchValue) {
                         continue;
                     }
 
