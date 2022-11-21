@@ -158,13 +158,7 @@ export const activate = () => {
                 return;
             }
 
-            let temporaryFileWithoutComments: string;
-
-            const getFileContentWithoutComments = () => {
-                temporaryFileWithoutComments = temporaryFileWithoutComments || stripJsonComments(document.getText());
-
-                return temporaryFileWithoutComments;
-            }
+            let fileContentWithoutComments: string;
 
             void editor.edit((edit) => {
                 for (const [i, change] of contentChanges.entries()) {
@@ -187,7 +181,8 @@ export const activate = () => {
                         continue;
                     }
 
-                    const fileContentWithoutComments = getFileContentWithoutComments();
+                    fileContentWithoutComments ??= stripJsonComments(document.getText());
+
                     const prevLineTextWithoutComments = getTextByLine(fileContentWithoutComments, prevLine.lineNumber)!;
 
                     const isComment = prevLineTextWithoutComments.trim() !== prevLineText.trim();
