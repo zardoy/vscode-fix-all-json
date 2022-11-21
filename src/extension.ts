@@ -165,7 +165,6 @@ export const activate = () => {
                     const prevLinePosition = change.range.start;
 
                     const prevLine = document.lineAt(prevLinePosition.line + i);
-                    const prevLineText = prevLine.text;
 
                     if (startsWithComment(prevLine.text.trim())) {
                         continue;
@@ -185,9 +184,7 @@ export const activate = () => {
 
                     const prevLineTextWithoutComments = getTextByLine(fileContentWithoutComments, prevLine.lineNumber)!;
 
-                    const isComment = prevLineTextWithoutComments.trim() !== prevLineText.trim();
-
-                    const prevLineLastChar = isComment ? prevLineTextWithoutComments.trimEnd().at(-1) : prevLineText.at(-1);
+                    const prevLineLastChar = prevLineTextWithoutComments.trimEnd().at(-1);
 
                     if (!prevLineLastChar) {
                         continue;
@@ -203,7 +200,7 @@ export const activate = () => {
                         continue;
                     }
 
-                    const insertPostion = isComment ? new vscode.Position(prevLine.lineNumber, prevLineTextWithoutComments.trimEnd().length) : prevLine.range.end;
+                    const insertPostion = new vscode.Position(prevLine.lineNumber, prevLineTextWithoutComments.trimEnd().length);
 
                     edit.insert(insertPostion, ",");
                 }
