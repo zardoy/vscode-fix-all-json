@@ -161,7 +161,7 @@ export const activate = () => {
             let temporaryFileWithoutComments: string;
 
             const getFileContentWithoutComments = () => {
-                temporaryFileWithoutComments = temporaryFileWithoutComments || stripJsonComments(document.getText());
+                temporaryFileWithoutComments = temporaryFileWithoutComments || stripJsonComments(document.getText(), { whitespace: false });
 
                 return temporaryFileWithoutComments;
             }
@@ -183,16 +183,6 @@ export const activate = () => {
                         continue;
                     }
 
-                    const isMatchValue =
-                        prevLineLastChar === "}" ||
-                        prevLineLastChar === '"' ||
-                        prevLineLastChar === ']' ||
-                        isNumber(prevLineLastChar);
-
-                    if (!isMatchValue) {
-                        continue;
-                    }
-
                     const currentLineText = document.lineAt(prevLine.lineNumber + 1).text.trim();
 
                     const isCurrentLineEmpty =
@@ -204,13 +194,23 @@ export const activate = () => {
                     }
 
                     const fileContentWithoutComments = getFileContentWithoutComments();
-                    const prevLineTextWithoutComments = getTextByLine(fileContentWithoutComments, prevLine.lineNumber)?.trim();
+                    const prevLineTextWithoutComments = getTextByLine(fileContentWithoutComments, prevLine.lineNumber)!;
 
-                    if (prevLineTextWithoutComments !== prevLineText.trim()) {
+                    const isComment = prevLineTextWithoutComments.trim() !== prevLineText.trim();
+
+                    const isMatchValue =
+                        prevLineLastChar === "}" ||
+                        prevLineLastChar === '"' ||
+                        prevLineLastChar === ']' ||
+                        isNumber(prevLineLastChar);
+
+                    if (!isMatchValue && !isComment) {
                         continue;
                     }
 
-                    edit.insert(prevLine.range.end, ",");
+                    const insertPostion = isComment ? new vscode.Position(prevLine.lineNumber, prevLineTextWithoutComments.length - 1) : prevLine.range.end;
+
+                    edit.insert(insertPostion, ",");
                 }
             }, { undoStopAfter: false, undoStopBefore: false });
         }
