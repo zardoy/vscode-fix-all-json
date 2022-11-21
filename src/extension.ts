@@ -161,7 +161,7 @@ export const activate = () => {
             let temporaryFileWithoutComments: string;
 
             const getFileContentWithoutComments = () => {
-                temporaryFileWithoutComments = temporaryFileWithoutComments || stripJsonComments(document.getText(), { whitespace: false });
+                temporaryFileWithoutComments = temporaryFileWithoutComments || stripJsonComments(document.getText());
 
                 return temporaryFileWithoutComments;
             }
@@ -192,7 +192,7 @@ export const activate = () => {
 
                     const isComment = prevLineTextWithoutComments.trim() !== prevLineText.trim();
 
-                    const prevLineLastChar = isComment ? prevLineTextWithoutComments.trim().at(-1) : prevLineText.at(-1);
+                    const prevLineLastChar = isComment ? prevLineTextWithoutComments.trimEnd().at(-1) : prevLineText.at(-1);
 
                     if (!prevLineLastChar) {
                         continue;
@@ -208,7 +208,7 @@ export const activate = () => {
                         continue;
                     }
 
-                    const insertPostion = isComment ? new vscode.Position(prevLine.lineNumber, prevLineTextWithoutComments.length - 1) : prevLine.range.end;
+                    const insertPostion = isComment ? new vscode.Position(prevLine.lineNumber, prevLineTextWithoutComments.trimEnd().length) : prevLine.range.end;
 
                     edit.insert(insertPostion, ",");
                 }
