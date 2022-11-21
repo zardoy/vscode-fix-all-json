@@ -3,8 +3,8 @@
 import * as vscode from 'vscode'
 import { getExtensionSetting, registerExtensionCommand } from 'vscode-framework'
 import stripJsonComments from 'strip-json-comments'
+import { oneOf } from '@zardoy/utils'
 import { getTextByLine, isContainEoL, isNumber } from './utils';
-
 
 export const activate = () => {
     vscode.languages.registerCodeActionsProvider(
@@ -116,7 +116,7 @@ export const activate = () => {
     })
 
     vscode.workspace.onDidChangeTextDocument(
-        ({ contentChanges, document }) => {
+        ({ contentChanges, document, reason }) => {
             if (!getExtensionSetting("insertMissingCommaOnEnter")) {
                 return;
             }
@@ -148,6 +148,10 @@ export const activate = () => {
                 ) === false
             ) {
                 return;
+            }
+
+            if (oneOf(reason, vscode.TextDocumentChangeReason.Undo, vscode.TextDocumentChangeReason.Redo)) {
+              return
             }
 
             if (contentChanges.some((change) => !isContainEoL(change.text))) {
