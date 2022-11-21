@@ -151,7 +151,7 @@ export const activate = () => {
             }
 
             if (oneOf(reason, vscode.TextDocumentChangeReason.Undo, vscode.TextDocumentChangeReason.Redo)) {
-              return
+                return
             }
 
             if (contentChanges.some((change) => !isContainEoL(change.text))) {
@@ -197,7 +197,7 @@ export const activate = () => {
                         edit.insert(lastCharacterPosition, ",");
                     }
                 }
-            });
+            }, { undoStopAfter: false, undoStopBefore: false });
         }
     );
 }
