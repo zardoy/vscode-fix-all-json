@@ -26,7 +26,7 @@ Thumbs.db
 .idea/
 .vscode-test-web
 node_modules/
-.vscode/
+.vscode/settings.json
 *.sublime-project
 *.sublime-workspace
 yarn.lock

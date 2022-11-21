@@ -94,7 +94,7 @@
     "scripts": {
         "start": "vscode-framework start",
         "start-web": "vscode-framework start --web",
-        "build": "vscode-framework build",
+        "build": "tsc && vscode-framework build",
         "lint": "eslint src/**"
     },
     "pnpm": {
@@ -114,5 +114,14 @@
     "dependencies": {
         "strip-json-comments": "^5.0.0",
         "vscode-framework": "^0.0.18"
+    },
+    "prettier": {
+        "semi": false,
+        "singleQuote": true,
+        "proseWrap": "never",
+        "tabWidth": 4,
+        "trailingComma": "all",
+        "arrowParens": "avoid",
+        "printWidth": 160
     }
 }

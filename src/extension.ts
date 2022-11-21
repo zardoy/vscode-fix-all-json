@@ -45,7 +45,7 @@ export const activate = () => {
             for (const problem of diagnostics) {
                 const { line, character } = problem.range.start
 
-                const pos = new vscode.Position(line, character);
+                const pos = new vscode.Position(line, character)
                 switch (problem.message) {
                     // 514 code optionally check source=json
                     case 'Expected comma': {
