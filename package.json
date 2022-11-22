@@ -71,7 +71,7 @@
                 "insertMissingCommaOnEnter": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Insert missing comma after \"Enter\". Working only if last symbol is `}`, `]`, `\"` or number"
+                    "description": "Insert missing comma after \"Enter\". Works only if last JSON symbol on the line is `}`, `]`, `\"` or number"
                 }
             }
         }
