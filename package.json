@@ -60,12 +60,9 @@
                     },
                     "additionalProperties": false
                 },
-                "runFormatter": {
+                "enableIndividualCodeActions": {
                     "type": "boolean",
-                    "default": true
-                },
-                "runOnSave": {
-                    "type": "boolean",
+                    "description": "Wether to enable all types of code fixes for individual problems",
                     "default": true
                 },
                 "insertMissingCommaOnEnter": {

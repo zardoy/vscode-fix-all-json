@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 
 import { expect } from 'chai'
 // import delay from 'delay'
-import { clearEditorText, setupFixtureContent } from './utils'
+import { setupFixtureContent } from './utils'
 import { jsonFixesFixtures } from '../fixtures/files'
 import dedent from 'string-dedent'
 import { join } from 'path'
@@ -12,13 +12,16 @@ describe('Json Fixes', () => {
     let document: vscode.TextDocument
     let editor: vscode.TextEditor
     let temporaryFile = join(__dirname, '../temp.json')
-    if (!fs.existsSync(temporaryFile)) fs.writeFileSync(temporaryFile, '', 'utf8')
+    fs.writeFileSync(temporaryFile, '', 'utf8')
     before(done => {
         void vscode.window
             .showTextDocument(vscode.Uri.file(temporaryFile))
             .then(async newEditor => {
                 editor = newEditor
                 document = editor.document
+                await vscode.workspace.getConfiguration('').update('editor.codeActionsOnSave', { 'source.fixAll': true }, vscode.ConfigurationTarget.Global)
+                await vscode.workspace.getConfiguration('').update('editor.formatOnSave', true, vscode.ConfigurationTarget.Global)
+                await vscode.workspace.getConfiguration('').update('files.eol', '\n', vscode.ConfigurationTarget.Global)
             })
             .then(done)
     })
@@ -30,6 +33,10 @@ describe('Json Fixes', () => {
                 })
             })
             await Promise.all([setupFixtureContent(editor, content.input), diagnosticsChangePromise])
+            console.log(
+                '[debug] diagnostics:',
+                vscode.languages.getDiagnostics(document.uri).map(({ message }) => message),
+            )
             await document.save()
             expect(document.getText()).to.equal(dedent(content.expected))
         })

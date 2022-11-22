@@ -19,25 +19,39 @@ export const activate = () => {
         },
     )
 
-    const performFixes = async () => {
-        const currentEditor = vscode.window.activeTextEditor
-        if (currentEditor === undefined || currentEditor.viewColumn === undefined) return
-
-        const { document } = currentEditor
-        // TODO test jsonc
-        if (document.isClosed || !['json', 'jsonc'].includes(document.languageId)) return
-
-        const diagnostics = vscode.languages.getDiagnostics(document.uri)
-
-        if (diagnostics.length === 0) {
-            console.warn('Everything is clean')
-            return
+    const getJsonFixes = (
+        document: vscode.TextDocument,
+        diagnostics: readonly vscode.Diagnostic[],
+        isSingleCodeActionFix = false,
+    ): { workspaceEdit: vscode.WorkspaceEdit; titleOverride?: string } | void => {
+        const enableFixes = isSingleCodeActionFix
+            ? new Proxy({} as never, {
+                  get(target, p, receiver) {
+                      return true
+                  },
+              })
+            : getExtensionSetting('enableFixes')
+        const edits: vscode.TextEdit[] = []
+        const editCallbackBuilder = (cb: (edit: Pick<vscode.TextEditorEdit, 'insert' | 'delete'>) => void) => {
+            cb({
+                insert(pos, value) {
+                    edits.push({
+                        range: new vscode.Range(pos, pos),
+                        newText: value,
+                    })
+                },
+                delete(range) {
+                    edits.push({
+                        range,
+                        newText: '',
+                    })
+                },
+            })
         }
 
-        console.time('process')
-        const enableFixes = getExtensionSetting('enableFixes')
-        let needsFormatter = false
-        await currentEditor.edit(edit => {
+        let codeActionTitleOverride: string | undefined
+
+        editCallbackBuilder(edit => {
             for (const problem of diagnostics) {
                 const { line, character } = problem.range.start
 
@@ -53,7 +67,8 @@ export const activate = () => {
                         // }
 
                         edit.insert(pos, ',')
-                        needsFormatter = true
+                        codeActionTitleOverride = 'Insert comma'
+                        // needsFormatter = true
                         break
                     }
 
@@ -62,19 +77,22 @@ export const activate = () => {
                     case 'Trailing comma':
                         if (!enableFixes.removeTrailingCommas) continue
                         edit.delete(problem.range)
+                        codeActionTitleOverride = 'Remove trailing comma'
                         break
 
                     // 515
                     case 'Colon expected':
                         if (!enableFixes.insertMissingColon) continue
                         edit.insert(pos, ':')
-                        needsFormatter = true
+                        codeActionTitleOverride = 'Insert colon'
+                        // needsFormatter = true
                         break
                     // why no source and code?
                     case 'Comments are not permitted in JSON.':
                         if (!enableFixes.removeComments) continue
                         edit.delete(problem.range)
-                        needsFormatter = true
+                        codeActionTitleOverride = 'Remove comment'
+                        // needsFormatter = true
                         break
                     case 'Property keys must be doublequoted': {
                         if (!enableFixes.fixDoubleQuotes) continue
@@ -90,7 +108,8 @@ export const activate = () => {
 
                         edit.insert(new vscode.Position(start.line, start.character), '"')
                         edit.insert(new vscode.Position(end.line, end.character), '"')
-                        needsFormatter = true
+                        codeActionTitleOverride = 'Wrap with double quotes'
+                        // needsFormatter = true
                         break
                     }
 
@@ -99,16 +118,56 @@ export const activate = () => {
                 }
             }
         })
-        // we're actually running formatter twice (before and after this)
-        if (needsFormatter && getExtensionSetting('runFormatter')) await vscode.commands.executeCommand('editor.action.formatDocument')
-        console.timeEnd('process')
+
+        if (edits.length === 0) return
+
+        const workspaceEdit = new vscode.WorkspaceEdit()
+        workspaceEdit.set(document.uri, edits)
+
+        return {
+            workspaceEdit,
+            titleOverride: codeActionTitleOverride,
+        }
     }
 
-    registerExtensionCommand('fixFile', async () => performFixes())
+    vscode.languages.registerCodeActionsProvider(['json', 'jsonc'], {
+        provideCodeActions(document, range, context) {
+            const fixAllRequest = context.only?.contains(vscode.CodeActionKind.SourceFixAll.append('source.fixAll.eslint'))
+            if (!fixAllRequest) {
+                if (!getExtensionSetting('enableIndividualCodeActions')) return
+                // ensure propose one individual fix
+                const firstDiagnostic = context.diagnostics[0]
+                if (!firstDiagnostic) return
+                const fix = getJsonFixes(document, [firstDiagnostic], true)
+                if (!fix) return
+                return [
+                    {
+                        title: fix.titleOverride ?? `Fix ${firstDiagnostic.message}`,
+                        kind: vscode.CodeActionKind.QuickFix,
+                        edit: fix.workspaceEdit,
+                    },
+                ]
+            }
 
-    vscode.workspace.onWillSaveTextDocument(({ waitUntil, reason }) => {
-        if (!getExtensionSetting('runOnSave') || reason === vscode.TextDocumentSaveReason.AfterDelay) return
-        waitUntil(performFixes())
+            const { workspaceEdit } = getJsonFixes(document, context.diagnostics) ?? {}
+            if (!workspaceEdit) return
+            return [
+                {
+                    title: 'Fix all JSON problems',
+                    // diagnostics
+                    edit: workspaceEdit,
+                    kind: vscode.CodeActionKind.SourceFixAll,
+                },
+            ]
+        },
+    })
+
+    registerExtensionCommand('fixFile', async () => {
+        const editor = vscode.window.activeTextEditor
+        if (!editor) return
+        const { workspaceEdit } = getJsonFixes(editor.document, vscode.languages.getDiagnostics(editor.document.uri)) ?? {}
+        if (!workspaceEdit) return
+        await vscode.workspace.applyEdit(workspaceEdit)
     })
 
     registerCommaOnEnter()
