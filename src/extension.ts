@@ -111,5 +111,5 @@ export const activate = () => {
         waitUntil(performFixes())
     })
 
-    registerCommaOnEnter();
+    registerCommaOnEnter()
 }
