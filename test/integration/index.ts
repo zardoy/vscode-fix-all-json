@@ -10,10 +10,17 @@ export const run = async () => {
     })
     const testsRoot = join(__dirname, './suite')
     await new Promise<void>(resolve => {
-        glob('**/**.test.js', { cwd: testsRoot }, (err, files) => {
+        glob('**/**.test.js', { cwd: testsRoot }, (err, files: string[]) => {
             if (err) throw err
 
-            for (const file of files) mocha.addFile(join(testsRoot, file))
+            const fixedOrderFiles = ['jsonFixes.test.js', 'commaOnEnter.test.js']
+
+            for (const file of fixedOrderFiles) {
+                mocha.addFile(join(testsRoot, file))
+            }
+            for (const file of files.filter(file => !fixedOrderFiles.includes(file))) {
+                mocha.addFile(join(testsRoot, file))
+            }
 
             mocha.run(failures => {
                 if (failures > 0) {
