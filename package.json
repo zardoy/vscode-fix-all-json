@@ -120,6 +120,7 @@
         "chai": "^4.3.7",
         "glob": "^8.0.3",
         "string-dedent": "^3.0.1",
+        "strip-json-comments": "^5.0.0",
         "vscode-framework": "^0.0.18"
     },
     "prettier": {
