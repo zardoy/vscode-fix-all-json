@@ -7,20 +7,21 @@ import { getTextByLine, isContainEoL, isNumber, startsWithComment } from './util
 export default () => {
     vscode.workspace.onDidChangeTextDocument(({ contentChanges, document, reason }) => {
         if (!getExtensionSetting('insertMissingCommaOnEnter')) return
-
-        if (!vscode.languages.match(['json', 'jsonc'], document)) return
-
-        if (contentChanges.length === 0) return
-
-        contentChanges = [...contentChanges].sort((a, b) => a.range.start.compareTo(b.range.start))
+        if (!vscode.languages.match(['json', 'jsonc'], document) || contentChanges.length === 0) return
 
         const editor = vscode.window.activeTextEditor
 
-        if (document.uri !== editor?.document.uri || ['output'].includes(editor.document.uri.scheme)) return
+        contentChanges = [...contentChanges].sort((a, b) => a.range.start.compareTo(b.range.start))
 
-        if (vscode.workspace.fs.isWritableFileSystem(document.uri.scheme) === false) return
-
-        if (oneOf(reason, vscode.TextDocumentChangeReason.Undo, vscode.TextDocumentChangeReason.Redo)) return
+        if (
+            document.uri !== editor?.document.uri ||
+            ['output'].includes(editor.document.uri.scheme) ||
+            vscode.workspace.fs.isWritableFileSystem(document.uri.scheme) === false ||
+            oneOf(reason, vscode.TextDocumentChangeReason.Undo, vscode.TextDocumentChangeReason.Redo)
+            // eslint-disable-next-line curly
+        ) {
+            return
+        }
 
         if (contentChanges.some(change => !isContainEoL(change.text))) return
 
