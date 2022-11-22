@@ -33,6 +33,10 @@ describe('Json Fixes', () => {
                 })
             })
             await Promise.all([setupFixtureContent(editor, content.input), diagnosticsChangePromise])
+            console.log(
+                '[debug] diagnostics:',
+                vscode.languages.getDiagnostics(document.uri).map(({ message }) => message),
+            )
             await document.save()
             expect(document.getText()).to.equal(dedent(content.expected))
         })
