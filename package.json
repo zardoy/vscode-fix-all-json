@@ -1,7 +1,7 @@
 {
     "name": "fix-all-json",
     "displayName": "Fix All JSON",
-    "description": "Fix missing and trailing commas on save",
+    "description": "Fix missing & trailing commas + extras",
     "publisher": "zardoy",
     "version": "0.0.0-dev",
     "preview": true,
@@ -60,12 +60,9 @@
                     },
                     "additionalProperties": false
                 },
-                "runFormatter": {
+                "enableIndividualCodeActions": {
                     "type": "boolean",
-                    "default": true
-                },
-                "runOnSave": {
-                    "type": "boolean",
+                    "description": "Wether to enable all types of code fixes for individual problems",
                     "default": true
                 }
             }
@@ -82,15 +79,22 @@
         },
         "virtualWorkspaces": true
     },
-    "repository": "https://github.com/zardoy/vscode-fix-all-json.git",
+    "release": {
+        "preset": {
+            "runTest": false
+        }
+    },
+    "icon": "resources/icon.png",
     "author": "Vitaly Turovsky <vital2580@icloud.com>",
     "license": "MIT",
     "private": true,
     "scripts": {
         "start": "vscode-framework start",
         "start-web": "vscode-framework start --web",
-        "build": "vscode-framework build",
-        "lint": "eslint src/**"
+        "build": "tsc && vscode-framework build",
+        "lint": "eslint src/**",
+        "integration-test": "rimraf -rf ./testsOut/ && tsc -p tsconfig.test.json && node testsOut/runTests.js",
+        "integration-test:watch": "chokidar \"test/integration/**\" -c \"pnpm integration-test\" --initial"
     },
     "pnpm": {
         "overrides": {
@@ -98,15 +102,34 @@
         }
     },
     "devDependencies": {
+        "@types/chai": "^4.3.4",
+        "@types/mocha": "^10.0.0",
         "@types/node": "^16.11.12",
         "@types/vscode": "^1.62.0",
         "@zardoy/tsconfig": "^1.2.2",
+        "chokidar-cli": "^3.0.0",
         "cross-env": "^7.0.3",
         "eslint": "^8.18.0",
         "eslint-config-zardoy": "^0.2.11",
+        "mocha": "^10.1.0",
+        "rimraf": "^3.0.2",
         "typescript": "^4.5.2"
     },
     "dependencies": {
+        "@vscode/test-electron": "^2.2.0",
+        "chai": "^4.3.7",
+        "glob": "^8.0.3",
+        "string-dedent": "^3.0.1",
         "vscode-framework": "^0.0.18"
+    },
+    "prettier": {
+        "semi": false,
+        "singleQuote": true,
+        "proseWrap": "never",
+        "tabWidth": 4,
+        "trailingComma": "all",
+        "arrowParens": "avoid",
+        "printWidth": 160,
+        "endOfLine": "auto"
     }
 }
