@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+import stripJsonComments from 'strip-json-comments'
 
 // seems to be working good enough
 /**
