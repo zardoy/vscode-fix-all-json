@@ -162,9 +162,7 @@ export const activate = () => {
 
             void editor.edit((edit) => {
                 for (const [i, change] of contentChanges.entries()) {
-                    const prevLinePosition = change.range.start;
-
-                    const prevLine = document.lineAt(prevLinePosition.line + i);
+                    const prevLine = document.lineAt(change.range.start.line + i);
 
                     if (startsWithComment(prevLine.text.trim())) {
                         continue;
