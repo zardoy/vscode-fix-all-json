@@ -12,13 +12,15 @@ describe('Json Fixes', () => {
     let document: vscode.TextDocument
     let editor: vscode.TextEditor
     let temporaryFile = join(__dirname, '../temp.json')
-    if (!fs.existsSync(temporaryFile)) fs.writeFileSync(temporaryFile, '', 'utf8')
+    fs.writeFileSync(temporaryFile, '', 'utf8')
     before(done => {
         void vscode.window
             .showTextDocument(vscode.Uri.file(temporaryFile))
             .then(async newEditor => {
                 editor = newEditor
                 document = editor.document
+                await vscode.workspace.getConfiguration('').update('editor.codeActionsOnSave', { 'source.fixAll': true }, vscode.ConfigurationTarget.Global)
+                await vscode.workspace.getConfiguration('').update('editor.formatOnSave', true, vscode.ConfigurationTarget.Global)
             })
             .then(done)
     })
