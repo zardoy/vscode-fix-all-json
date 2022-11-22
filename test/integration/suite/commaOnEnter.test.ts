@@ -34,6 +34,11 @@ describe('Comma on Enter', () => {
             .then(async newDocument => {
                 document = newDocument
                 editor = await vscode.window.showTextDocument(document)
+                if (process.env.CI) {
+                    await new Promise(resolve => {
+                        setTimeout(resolve, 1000)
+                    })
+                }
             })
             .then(done)
     })
