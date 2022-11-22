@@ -148,7 +148,7 @@ export const activate = () => {
                 ]
             }
 
-            const { workspaceEdit } = getJsonFixes(document, context.diagnostics)!
+            const { workspaceEdit } = getJsonFixes(document, context.diagnostics) ?? {}
             if (!workspaceEdit) return
             return [
                 {
