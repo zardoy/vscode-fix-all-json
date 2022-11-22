@@ -31,8 +31,6 @@ export default () => {
                 for (const [i, change] of contentChanges.entries()) {
                     const prevLine = document.lineAt(change.range.start.line + i)
 
-                    if (startsWithComment(prevLine.text.trim())) continue
-
                     const currentLineText = document.lineAt(prevLine.lineNumber + 1).text.trim()
 
                     const isCurrentLineEmpty = currentLineText.trim() === ''
@@ -42,17 +40,16 @@ export default () => {
 
                     fileContentWithoutComments ??= stripJsonComments(document.getText())
 
-                    const prevLineTextWithoutComments = getTextByLine(fileContentWithoutComments, prevLine.lineNumber)!
+                    const prevLineWithoutComments = getTextByLine(fileContentWithoutComments, prevLine.lineNumber)!.trimEnd()
 
-                    const prevLineLastChar = prevLineTextWithoutComments.trimEnd().at(-1)
+                    if (!prevLineWithoutComments) continue
 
-                    if (!prevLineLastChar) continue
+                    const isGoodEnding =
+                        ['}', '"', ']', 'true', 'false'].some(char => prevLineWithoutComments.endsWith(char)) || isNumber(prevLineWithoutComments.at(-1)!)
 
-                    const isMatchValue = prevLineLastChar === '}' || prevLineLastChar === '"' || prevLineLastChar === ']' || isNumber(prevLineLastChar)
+                    if (!isGoodEnding) continue
 
-                    if (!isMatchValue) continue
-
-                    const insertPostion = new vscode.Position(prevLine.lineNumber, prevLineTextWithoutComments.trimEnd().length)
+                    const insertPostion = new vscode.Position(prevLine.lineNumber, prevLineWithoutComments.length)
 
                     edit.insert(insertPostion, ',')
                 }
