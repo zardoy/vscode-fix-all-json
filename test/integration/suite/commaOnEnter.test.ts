@@ -9,8 +9,8 @@ describe('Comma on Enter', () => {
     let editor: vscode.TextEditor
 
     // positions markers description:
-    // | - valid position to insert comma after Enter (adding empty newline below)
-    // $ - invalid position to insert comma after Enter (adding empty newline below)
+    // /*|*/ - valid position to insert comma after ctrl+Enter (adding empty newline below)
+    // /*$*/ - invalid position to insert comma after ctrl+Enter (adding empty newline below)
     // use editor text selection highlighting for faster navigation between positions
     const FULL_FIXTURE = dedent/* json */ `
     {
@@ -23,7 +23,7 @@ describe('Comma on Enter', () => {
         "key5": []/*|*/
         "key6": {/*$*/
         }/*|*/
-        "key7": "/*$*/ value",
+        "key7": "value",/*$*/
         // Comment with number 3/*$*/
     }
     `
