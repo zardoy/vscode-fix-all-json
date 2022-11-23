@@ -52,7 +52,8 @@ describe('Comma on Enter', () => {
             if (isExpected) {
                 // wait for expected changes to be done
                 await new Promise<void>(resolve => {
-                    const { dispose } = vscode.workspace.onDidChangeTextDocument(() => {
+                    const { dispose } = vscode.workspace.onDidChangeTextDocument(({ document: changedDocument }) => {
+                        if (changedDocument !== document) return
                         dispose()
                         resolve()
                     })
