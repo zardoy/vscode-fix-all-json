@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 import stripJsonComments from 'strip-json-comments'
 import { oneOf } from '@zardoy/utils'
 import { getExtensionSetting } from 'vscode-framework'
-import { getTextByLine, isContainEoL, isNumber, startsWithComment } from './utils'
+import { getTextByLine, isEoL, isNumber, startsWithComment } from './utils'
 
 export default () => {
     vscode.workspace.onDidChangeTextDocument(({ contentChanges, document, reason }) => {
@@ -23,7 +23,7 @@ export default () => {
             return
         }
 
-        if (contentChanges.some(change => !isContainEoL(change.text))) return
+        if (contentChanges.some(change => !isEoL(change.text))) return
 
         let fileContentWithoutComments: string
 

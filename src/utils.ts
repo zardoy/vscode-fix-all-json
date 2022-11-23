@@ -6,8 +6,8 @@ export function isNumber(text: string) {
     return !Number.isNaN(Number.parseInt(text, 10))
 }
 
-export function isContainEoL(text: string) {
-    return text.includes('\n') || text.includes('\n\r')
+export function isEoL(text: string) {
+    return text.startsWith('\n') && text.trim() === '';
 }
 
 export function startsWithComment(text: string) {
