@@ -20,6 +20,11 @@ describe('Comma on Enter', () => {
         /*$*/
         "key4": true/*|*/
         "key4": false/*|*/
+        "key5": []/*|*/
+        "key6": {/*$*/
+        }/*|*/
+        "key7": "/*$*/ value",
+        // Comment with number 3/*$*/
     }
     `
 
