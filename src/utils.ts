@@ -7,7 +7,7 @@ export function isNumber(text: string) {
 }
 
 export function isEoL(text: string) {
-    return text.startsWith('\n') && text.trim() === '';
+    return text.startsWith('\n') && text.trim() === ''
 }
 
 export function startsWithComment(text: string) {
