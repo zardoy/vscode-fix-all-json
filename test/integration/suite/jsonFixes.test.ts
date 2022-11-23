@@ -28,7 +28,9 @@ describe('Json Fixes', () => {
     for (const [name, content] of Object.entries(jsonFixesFixtures)) {
         it(`Fix JSON issues: ${name}`, async () => {
             const diagnosticsChangePromise = new Promise<void>(resolve => {
-                vscode.languages.onDidChangeDiagnostics(() => {
+                vscode.languages.onDidChangeDiagnostics(({ uris }) => {
+                    if (!uris.map(uri => uri.toString()).includes(document.uri.toString())) return
+                    if (vscode.languages.getDiagnostics(document.uri).length === 0) return
                     resolve()
                 })
             })

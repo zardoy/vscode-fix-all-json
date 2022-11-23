@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
 import { getExtensionSetting, registerExtensionCommand } from 'vscode-framework'
+import registerCommaOnEnter from './commaOnEnter'
 
 export const activate = () => {
     vscode.languages.registerCodeActionsProvider(
@@ -168,4 +169,6 @@ export const activate = () => {
         if (!workspaceEdit) return
         await vscode.workspace.applyEdit(workspaceEdit)
     })
+
+    registerCommaOnEnter()
 }
