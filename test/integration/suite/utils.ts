@@ -21,6 +21,10 @@ export const clearEditorText = async (editor: vscode.TextEditor, resetContent = 
     })
 }
 
+export const getTextNormalizedEol = (document: vscode.TextDocument) => {
+    return document.getText().split(/\r?\n/).join('\n')
+}
+
 export const setupFixtureContent = async (editor: vscode.TextEditor, content: string) => {
     await clearEditorText(editor, stringDedent(content))
 }
@@ -40,4 +44,15 @@ export const stringWithPositions = <T extends string>(contents: string, replacem
         }
     }
     return [contents, cursorPositions]
+}
+
+export const offsetToPosition = (string: string, offset: number) => {
+    let curOffset = 0
+    const lines = string.split('\n')
+    for (const [i, line] of lines.entries()) {
+        const lineLength = line.length + 1
+        curOffset += lineLength
+        if (offset < curOffset) return new vscode.Position(i, lineLength - (curOffset - offset))
+    }
+    return null!
 }
