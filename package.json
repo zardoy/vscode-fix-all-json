@@ -103,7 +103,7 @@
         "start-web": "vscode-framework start --web",
         "build": "tsc && vscode-framework build",
         "lint": "eslint src/**",
-        "integration-test": "rimraf -rf ./testsOut/ && tsc -p tsconfig.test.json && node testsOut/runTests.js",
+        "integration-test": "rimraf -rf ./testsOut/ .vscode-test/user-data/User/settings.json && tsc -p tsconfig.test.json && node testsOut/runTests.js",
         "integration-test:watch": "chokidar \"test/integration/**\" -c \"pnpm integration-test\" --initial"
     },
     "pnpm": {
