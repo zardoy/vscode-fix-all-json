@@ -4,7 +4,7 @@ import { getExtensionSetting } from 'vscode-framework'
 
 export default () => {
     vscode.workspace.onDidChangeTextDocument(({ contentChanges, document, reason }) => {
-        if (!getExtensionSetting('insertMissingCommaOnEnter')) return
+        if (!getExtensionSetting('insertMissingQuotesOnColon')) return
         if (!vscode.languages.match(['json', 'jsonc'], document) || contentChanges.length === 0) return
 
         const editor = vscode.window.activeTextEditor
