@@ -18,7 +18,6 @@ export default () => {
             ['output'].includes(editor.document.uri.scheme) ||
             vscode.workspace.fs.isWritableFileSystem(document.uri.scheme) === false ||
             oneOf(reason, vscode.TextDocumentChangeReason.Undo, vscode.TextDocumentChangeReason.Redo)
-            // eslint-disable-next-line curly
         ) {
             return
         }

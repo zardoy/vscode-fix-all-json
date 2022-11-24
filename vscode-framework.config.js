@@ -5,9 +5,11 @@ const config = {
     esbuild: {
         production: {
             defineEnv: {
+                // @ts-ignore
                 EXTENSION_BOOTSTRAP_CONFIG: null,
             },
         },
+        mainFields: ['module', 'main'],
     },
     // target: 'web',
     // webOpen: 'web',

@@ -116,7 +116,7 @@
         "cross-env": "^7.0.3",
         "escape-string-regexp": "4.0.0",
         "eslint": "^8.18.0",
-        "eslint-config-zardoy": "^0.2.11",
+        "eslint-config-zardoy": "^0.2.15",
         "mocha": "^10.1.0",
         "rimraf": "^3.0.2",
         "typescript": "^4.5.2"
@@ -124,6 +124,7 @@
     "dependencies": {
         "@vscode/test-electron": "^2.2.0",
         "@zardoy/utils": "^0.0.10",
+        "@zardoy/vscode-utils": "^0.0.46",
         "chai": "^4.3.7",
         "glob": "^8.0.3",
         "string-dedent": "^3.0.1",

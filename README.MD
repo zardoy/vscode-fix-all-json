@@ -1,12 +1,20 @@
 # Fix All JSON
 
-Simple VSCode extension for fixing almost all annoying JSON (and even JSONC!) problems.
+Simple & fast VSCode extension for fixing almost all annoying JSON (and even JSONC!) problems on typing / save.
 
 - supports virtual workspaces and web
-- small and no dependencies
 - simple and fast as it uses the errors you see
+- [On-Type Fixes](#on-type-fixes)
 
-<!-- TODO about code fixes -->
+### Enabling Fixing on Save
+
+To enable problems auto fixing on save (which is super useful), ensure you have the following in your `settings.json` (`> Preferences: Open User Settings (JSON)`):
+
+```json
+"editor.codeActionsOnSave": {
+  "source.fixAll": true
+}
+```
 
 ## What fixes
 
@@ -20,15 +28,22 @@ All these fixes are configurable and can be disabled in settings:
 | Comments are not permitted in JSON. (json only) | Remove the whole comment (**disabled by default**)   |
 | Property keys must be doublequoted              | Remove quotes (if have `'` or **`**) and doublequote |
 
-> Note: missing commas just placed before the error range. Its assumed you have autoformatter enabled to handle the "right placing"
-> In other words, it would run formatter on each save, however you can disable it via setting
+> Note: missing commas just placed before the error range. Its assumed you have autoformatter enabled to handle the "right positioning"
 
-Note 2: this extension though doesn't do *autoquoting*, there is [vscode-fix-json](https://github.com/oliversturm/vscode-fix-json) for this.
+Note 2: this extension though doesn't do value *autoquoting*, there is [vscode-fix-json](https://github.com/oliversturm/vscode-fix-json) for this.
 
 > Sometimes builtin JSON extension can be slow. In these cases you need to wait until errors are updated before fixing the file! We can do absolutely nothing about it.
 
 ## Why not Prettier?
 
-[Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) as formatter does great work on fixing trailing semicolons and quotes problems, however this extension is much faster and more aggressive overall.
+[Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) as formatter does great work on fixing trailing semicolons and quotes problems, however this extension is much faster and has more fixes.
 
-- Note: you can disable autofixing on save and instead run command whenever you want
+## Additional Features
+
+### On-Type Fixes
+
+- Insert missing comma on `Enter` (or `Ctrl+Enter`, enabled by default with `fixAllJson.insertMissingCommaOnEnter`)
+<!-- - Insert missing double quotes on `:` (enabled by default with `fixAllJson.insertMissingDoubleQuotesOnComma`) -->
+<!-- - Replace `"` with `\"` within strings (disabled by default with `fixAllJson...`) -->
+<!-- - Replace `Enter` with `\n` within strings (disabled by default with `fixAllJson...`) -->
+<!-- - Replace `Tab` with `\t` within strings (disabled by default with `fixAllJson...`) -->

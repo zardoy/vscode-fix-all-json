@@ -27,4 +27,23 @@ export const jsonFixesFixtures = {
         }
         `,
     },
+    // two last cases can be common when copying from JS
+    doubleQuotesFix: {
+        input: /* json */ `
+        {
+            some'Interesting'Key: "prop",
+            \`some'Interesting'Key\`: "prop",
+            \`someInterestingKey\`: "prop",
+            'someInterestingKey': "prop"
+        }
+        `,
+        expected: /* json */ `
+        {
+            "some'Interesting'Key": "prop",
+            "some'Interesting'Key": "prop",
+            "someInterestingKey": "prop",
+            "someInterestingKey": "prop"
+        }
+        `,
+    },
 }

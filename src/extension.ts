@@ -32,7 +32,7 @@ export const activate = () => {
               })
             : getExtensionSetting('enableFixes')
         const edits: vscode.TextEdit[] = []
-        const editCallbackBuilder = (cb: (edit: Pick<vscode.TextEditorEdit, 'insert' | 'delete'>) => void) => {
+        const editCallbackBuilder = (cb: (edit: Pick<vscode.TextEditorEdit, 'insert' | 'delete' | 'replace'>) => void) => {
             cb({
                 insert(pos, value) {
                     edits.push({
@@ -46,6 +46,12 @@ export const activate = () => {
                         newText: '',
                     })
                 },
+                replace(location, value) {
+                    edits.push({
+                        range: location instanceof vscode.Position ? new vscode.Range(location, location) : location,
+                        newText: value,
+                    })
+                },
             })
         }
 
@@ -53,9 +59,8 @@ export const activate = () => {
 
         editCallbackBuilder(edit => {
             for (const problem of diagnostics) {
-                const { line, character } = problem.range.start
+                const pos = problem.range.start
 
-                const pos = new vscode.Position(line, character)
                 switch (problem.message) {
                     // 514 code optionally check source=json
                     case 'Expected comma': {
@@ -68,7 +73,6 @@ export const activate = () => {
 
                         edit.insert(pos, ',')
                         codeActionTitleOverride = 'Insert comma'
-                        // needsFormatter = true
                         break
                     }
 
@@ -79,37 +83,31 @@ export const activate = () => {
                         edit.delete(problem.range)
                         codeActionTitleOverride = 'Remove trailing comma'
                         break
-
                     // 515
                     case 'Colon expected':
                         if (!enableFixes.insertMissingColon) continue
                         edit.insert(pos, ':')
                         codeActionTitleOverride = 'Insert colon'
-                        // needsFormatter = true
                         break
                     // why no source and code?
                     case 'Comments are not permitted in JSON.':
                         if (!enableFixes.removeComments) continue
                         edit.delete(problem.range)
                         codeActionTitleOverride = 'Remove comment'
-                        // needsFormatter = true
                         break
                     case 'Property keys must be doublequoted': {
                         if (!enableFixes.fixDoubleQuotes) continue
                         const { start, end } = problem.range
                         const problemWord = document.getText(problem.range)
-                        const removeQuotes = /([`']).+\1/.exec(problemWord)
+                        const removeQuotes = /^([`']).+\1$/.exec(problemWord)
                         if (removeQuotes) {
-                            edit.delete(
-                                new vscode.Range(new vscode.Position(start.line, start.character), new vscode.Position(start.line, start.character + 1)),
-                            )
-                            edit.delete(new vscode.Range(new vscode.Position(end.line, end.character - 1), new vscode.Position(end.line, end.character)))
+                            edit.delete(new vscode.Range(start, start.translate(0, 1)))
+                            edit.delete(new vscode.Range(end.translate(0, -1), end))
                         }
 
-                        edit.insert(new vscode.Position(start.line, start.character), '"')
-                        edit.insert(new vscode.Position(end.line, end.character), '"')
+                        edit.insert(start, '"')
+                        edit.insert(end, '"')
                         codeActionTitleOverride = 'Wrap with double quotes'
-                        // needsFormatter = true
                         break
                     }
 
