@@ -1,5 +1,4 @@
 import * as vscode from 'vscode'
-import { oneOf } from '@zardoy/utils'
 import { getExtensionSetting } from 'vscode-framework'
 import { onJsonFileChange } from './utils'
 
@@ -24,14 +23,6 @@ export default () => {
                 if (!problem || problem.message !== 'Property keys must be doublequoted') continue
 
                 const { start, end } = problem.range
-
-                const problemWord = document.getText(problem.range)
-                const removeQuotes = /^([`']).+\1$/.test(problemWord)
-
-                if (removeQuotes) {
-                    edit.delete(new vscode.Range(start, start.translate(0, 1)))
-                    edit.delete(new vscode.Range(end.translate(0, -1), end))
-                }
 
                 edit.insert(start, '"')
                 edit.insert(end, '"')
