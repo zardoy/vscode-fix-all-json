@@ -27,10 +27,10 @@ export const activate = () => {
     ): { workspaceEdit: vscode.WorkspaceEdit; titleOverride?: string } | void => {
         const enableFixes = isSingleCodeActionFix
             ? new Proxy({} as never, {
-                get(target, p, receiver) {
-                    return true
-                },
-            })
+                  get(target, p, receiver) {
+                      return true
+                  },
+              })
             : getExtensionSetting('enableFixes')
         const edits: vscode.TextEdit[] = []
         const editCallbackBuilder = (cb: (edit: Pick<vscode.TextEditorEdit, 'insert' | 'delete' | 'replace'>) => void) => {
