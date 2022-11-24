@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 
 import { expect } from 'chai'
-import { clearEditorText, stringWithPositions } from './utils'
+import { clearEditorText, getTextNormalizedEol, offsetToPosition, stringWithPositions } from './utils'
 import dedent from 'string-dedent'
 
 describe('Comma on Enter', () => {
@@ -33,7 +33,8 @@ describe('Comma on Enter', () => {
     before(done => {
         void vscode.workspace
             .openTextDocument({
-                content: FULL_FIXTURE_CONTENT,
+                // don't prefil content with \n as vscode won't normalize eol here
+                content: '',
                 language: 'jsonc',
             })
             .then(async newDocument => {
@@ -51,7 +52,7 @@ describe('Comma on Enter', () => {
     const testPosition = (num: number, offset: number, isExpected: boolean) => {
         it(`${isExpected ? 'Valid' : 'Invalid'} position ${num}`, async () => {
             await clearEditorText(editor, FULL_FIXTURE_CONTENT)
-            const pos = document.positionAt(offset)
+            const pos = offsetToPosition(FULL_FIXTURE_CONTENT, offset)
             editor.selection = new vscode.Selection(pos, pos)
             await vscode.commands.executeCommand('editor.action.insertLineAfter')
             if (isExpected) {
@@ -63,17 +64,18 @@ describe('Comma on Enter', () => {
                         resolve()
                     })
                 })
+                const text = getTextNormalizedEol(document)
                 // assert that comma is inserted at expected marker position
-                expect(document.getText().at(offset)).to.equal(',')
+                expect(text.at(offset)).to.equal(',')
             } else {
                 // todo would be better to remove timeout in favor of cleaner solution
                 await new Promise(resolve => {
                     setTimeout(resolve, 40)
                 })
+                const text = getTextNormalizedEol(document)
                 // assert document text remains unchanged (except empty newline that we just added)
                 expect(
-                    document
-                        .getText()
+                    text
                         .split('\n')
                         .filter((x, i) => i !== editor.selection.active.line)
                         .join('\n'),
