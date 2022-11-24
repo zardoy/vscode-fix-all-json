@@ -1,29 +1,15 @@
 import * as vscode from 'vscode'
 import { oneOf } from '@zardoy/utils'
 import { getExtensionSetting } from 'vscode-framework'
+import { onJsonFileChange } from './utils'
 
 export default () => {
-    vscode.workspace.onDidChangeTextDocument(({ contentChanges, document, reason }) => {
+    onJsonFileChange(({ contentChanges, document, editor }) => {
         if (!getExtensionSetting('insertMissingDoubleQuotesOnColon')) return
-        if (!vscode.languages.match(['json', 'jsonc'], document) || contentChanges.length === 0) return
-
-        const editor = vscode.window.activeTextEditor
-
-        contentChanges = [...contentChanges].sort((a, b) => a.range.start.compareTo(b.range.start))
-
-        if (
-            document.uri !== editor?.document.uri ||
-            ['output'].includes(editor.document.uri.scheme) ||
-            vscode.workspace.fs.isWritableFileSystem(document.uri.scheme) === false ||
-            oneOf(reason, vscode.TextDocumentChangeReason.Undo, vscode.TextDocumentChangeReason.Redo)
-        ) {
-            return
-        }
 
         const diagnostics = vscode.languages.getDiagnostics(document.uri)
 
         if (diagnostics.length === 0) return
-
         if (contentChanges.some(change => change.text !== ':')) return
 
         void editor.edit(async edit => {
