@@ -43,7 +43,7 @@ Note 2: this extension though doesn't do value *autoquoting*, there is [vscode-f
 ### On-Type Fixes
 
 - Insert missing comma on `Enter` (or `Ctrl+Enter`, enabled by default with `fixAllJson.insertMissingCommaOnEnter`)
-<!-- - Insert missing double quotes on `:` (enabled by default with `fixAllJson.insertMissingDoubleQuotesOnComma`) -->
+- Insert missing double quotes on `:` (enabled by default with `fixAllJson.insertMissingDoubleQuotesOnColon`)
 <!-- - Replace `"` with `\"` within strings (disabled by default with `fixAllJson...`) -->
 <!-- - Replace `Enter` with `\n` within strings (disabled by default with `fixAllJson...`) -->
 <!-- - Replace `Tab` with `\t` within strings (disabled by default with `fixAllJson...`) -->

@@ -70,7 +70,7 @@
                     "default": true,
                     "markdownDescription": "Insert missing comma after \"Enter\". Works only if JSON line ends with `}`, `]`, `\"`, `true`/`false` or number"
                 },
-                "insertMissingQuotesOnColon": {
+                "insertMissingDoubleQuotesOnColon": {
                     "type": "boolean",
                     "default": true,
                     "markdownDescription": "Insert missing double quotes after \":\""
