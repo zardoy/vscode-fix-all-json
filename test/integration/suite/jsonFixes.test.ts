@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 
 import { expect } from 'chai'
 // import delay from 'delay'
-import { getTextNormalizedEol, setupFixtureContent } from './utils'
+import { getTextNormalizedEol, setupFixtureContent, waitForJsonDiagnostics } from './utils'
 import { jsonFixesFixtures } from '../fixtures/files'
 import dedent from 'string-dedent'
 import { join } from 'path'
@@ -26,14 +26,7 @@ describe('Json Fixes', () => {
     })
     for (const [name, content] of Object.entries(jsonFixesFixtures)) {
         it(`Fix JSON issues: ${name}`, async () => {
-            const diagnosticsChangePromise = new Promise<void>(resolve => {
-                vscode.languages.onDidChangeDiagnostics(({ uris }) => {
-                    if (!uris.map(uri => uri.toString()).includes(document.uri.toString())) return
-                    if (vscode.languages.getDiagnostics(document.uri).length === 0) return
-                    resolve()
-                })
-            })
-            await Promise.all([setupFixtureContent(editor, content.input), diagnosticsChangePromise])
+            await Promise.all([setupFixtureContent(editor, content.input), waitForJsonDiagnostics(document)])
             console.log(
                 '[debug] diagnostics:',
                 vscode.languages.getDiagnostics(document.uri).map(({ message }) => message),
