@@ -12,17 +12,31 @@ export default () => {
         if (contentChanges.some(change => change.text !== ':')) return
 
         void editor.edit(async edit => {
+            let previousLine: number | undefined
+            let sameLineChanges = 0
+            const translatePos = (pos: vscode.Position) => pos.translate(0, sameLineChanges - 1)
             for (const change of contentChanges) {
-                const problem = diagnostics.find(diagnostic => {
-                    const diagnosticPosition = diagnostic.range.end
-                    const changePosition = change.range.end
+                const changePos = change.range.end
+                const changePosLine = changePos.line
 
-                    return diagnosticPosition.line === changePosition.line && diagnosticPosition.character === changePosition.character
-                })
+                if (previousLine === undefined || changePosLine === previousLine) {
+                    sameLineChanges++
+                } else {
+                    // reset on next line
+                    sameLineChanges = 1
+                }
 
-                if (!problem || problem.message !== 'Property keys must be doublequoted') continue
+                previousLine = changePosLine
 
-                const { start, end } = problem.range
+                const problem = diagnostics.find(
+                    diagnostic => diagnostic.range.end.isEqual(changePos) && diagnostic.message === 'Property keys must be doublequoted',
+                )
+
+                if (!problem) continue
+
+                const { range } = problem
+                const start = translatePos(range.start)
+                const end = translatePos(range.end)
 
                 edit.insert(start, '"')
                 edit.insert(end, '"')

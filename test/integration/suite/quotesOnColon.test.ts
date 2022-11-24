@@ -8,8 +8,9 @@ describe.skip('Quotes on Colon', () => {
     let document: vscode.TextDocument
     let editor: vscode.TextEditor
 
-    const FULL_FIXTURE = '{ key1:'
-    const FULL_FIXTURE_EXPECTED = '{ "key1":}'
+    const TYPE_CONTENT = 'key1:'
+    const FULL_FIXTURE_EXPECTED = '{"key1":, "key1":,\n"key1":}'
+    const FULL_FIXTURE_UNCHANGED = '{key1:, key1:,\nkey1:}'
 
     before(done => {
         void vscode.workspace
@@ -37,10 +38,11 @@ describe.skip('Quotes on Colon', () => {
 
     const execTest = (title: string | undefined, isExpected: boolean) => {
         const cb = async () => {
-            await clearEditorText(editor, '')
-            const pos = new vscode.Position(0, 0)
-            editor.selection = new vscode.Selection(pos, pos)
-            await typeSequence(FULL_FIXTURE)
+            await clearEditorText(editor, '{, ,\n}')
+            const pos = new vscode.Position(0, 1)
+            const multiCursorPositions = [pos, pos.translate(0, 2), new vscode.Position(1, 0)]
+            editor.selections = multiCursorPositions.map(pos => new vscode.Selection(pos, pos))
+            await typeSequence(TYPE_CONTENT)
             if (isExpected) {
                 // wait for expected changes to be done
                 await new Promise<void>(resolve => {
@@ -56,7 +58,7 @@ describe.skip('Quotes on Colon', () => {
                 await new Promise(resolve => {
                     setTimeout(resolve, 60)
                 })
-                expect(document.getText()).to.equal(FULL_FIXTURE)
+                expect(document.getText()).to.equal(TYPE_CONTENT)
             }
         }
         if (title) it(title, cb)
