@@ -56,3 +56,13 @@ export const offsetToPosition = (string: string, offset: number) => {
     }
     return null!
 }
+
+export const waitForJsonDiagnostics = (document: vscode.TextDocument) => {
+    return new Promise<void>(resolve => {
+        vscode.languages.onDidChangeDiagnostics(({ uris }) => {
+            if (!uris.map(uri => uri.toString()).includes(document.uri.toString())) return
+            if (vscode.languages.getDiagnostics(document.uri).length === 0) return
+            resolve()
+        })
+    })
+}

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import { getExtensionSetting, registerExtensionCommand } from 'vscode-framework'
 import registerCommaOnEnter from './commaOnEnter'
+import registerQuotesOnColon from './quotesOnColon'
 
 export const activate = () => {
     vscode.languages.registerCodeActionsProvider(
@@ -169,4 +170,5 @@ export const activate = () => {
     })
 
     registerCommaOnEnter()
+    registerQuotesOnColon()
 }

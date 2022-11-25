@@ -49,8 +49,8 @@ describe('Comma on Enter', () => {
             .then(done)
     })
 
-    const testPosition = (num: number, offset: number, isExpected: boolean) => {
-        it(`${isExpected ? 'Valid' : 'Invalid'} position ${num}`, async () => {
+    const testPosition = (num: number, offset: number, isExpected: boolean, testFn: any = it) => {
+        testFn(`${isExpected ? 'Valid' : 'Invalid'} position ${num}`, async () => {
             await clearEditorText(editor, FULL_FIXTURE_CONTENT)
             const pos = offsetToPosition(FULL_FIXTURE_CONTENT, offset)
             editor.selection = new vscode.Selection(pos, pos)
@@ -91,4 +91,14 @@ describe('Comma on Enter', () => {
     for (const [i, invalidPosition] of FIXTURE_POSITIONS['/*$*/'].entries()) {
         testPosition(i, invalidPosition, false)
     }
+
+    it('Extension setting disabled', async () => {
+        await new Promise<void>(async resolve => {
+            await vscode.workspace.getConfiguration().update('fixAllJson.insertMissingCommaOnEnter', false, vscode.ConfigurationTarget.Global)
+            testPosition(-1, FIXTURE_POSITIONS['/*|*/'][0]!, false, async (name, cb) => {
+                await cb()
+                resolve()
+            })
+        })
+    })
 })
