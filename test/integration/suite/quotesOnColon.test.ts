@@ -1,10 +1,9 @@
 import * as vscode from 'vscode'
 
 import { expect } from 'chai'
-import { clearEditorText, waitForJsonDiagnostics } from './utils'
+import { clearEditorText, getTextNormalizedEol, prepareFileEditor, waitForJsonDiagnostics } from './utils'
 
-// todo enable back when https://github.com/microsoft/vscode-languageserver-node/issues/1128 is available
-describe.skip('Quotes on Colon', () => {
+describe('Quotes on Colon', () => {
     let document: vscode.TextDocument
     let editor: vscode.TextEditor
 
@@ -13,23 +12,13 @@ describe.skip('Quotes on Colon', () => {
     const FULL_FIXTURE_UNCHANGED = '{key1:, key1:,\nkey1:}'
 
     before(done => {
-        void vscode.workspace
-            .openTextDocument({
-                content: '',
-                language: 'jsonc',
-            })
-            .then(async newDocument => {
-                document = newDocument
-                editor = await vscode.window.showTextDocument(document)
-                if (process.env.CI) {
-                    await new Promise(resolve => {
-                        setTimeout(resolve, 1000)
-                    })
-                }
-                // make sure JSON server is started and diagnostics are here
-                await Promise.all([clearEditorText(editor, '{'), waitForJsonDiagnostics(document)])
-            })
-            .then(done)
+        prepareFileEditor().then(async () => {
+            editor = vscode.window.activeTextEditor!
+            document = editor.document
+            // make sure JSON server is started and diagnostics are here
+            await Promise.all([clearEditorText(editor, '{'), waitForJsonDiagnostics(document)])
+            done()
+        })
     })
 
     const typeSequence = async (seq: string) => {
@@ -52,13 +41,13 @@ describe.skip('Quotes on Colon', () => {
                         resolve()
                     })
                 })
-                expect(document.getText()).to.equal(FULL_FIXTURE_EXPECTED)
+                expect(getTextNormalizedEol(document)).to.equal(FULL_FIXTURE_EXPECTED)
             } else {
                 // todo would be better to remove timeout in favor of cleaner solution
                 await new Promise(resolve => {
                     setTimeout(resolve, 60)
                 })
-                expect(document.getText()).to.equal(TYPE_CONTENT)
+                expect(getTextNormalizedEol(document)).to.equal(FULL_FIXTURE_UNCHANGED)
             }
         }
         if (title) it(title, cb)
@@ -70,6 +59,6 @@ describe.skip('Quotes on Colon', () => {
 
     it('Extension setting disabled', async () => {
         await vscode.workspace.getConfiguration().update('fixAllJson.insertMissingDoubleQuotesOnColon', false, vscode.ConfigurationTarget.Global)
-        await execTest('Double quotes basic case', false)
+        await execTest(undefined, false)
     })
 })

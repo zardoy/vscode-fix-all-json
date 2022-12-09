@@ -31,6 +31,14 @@ export default () => {
                     const isGoodEnding =
                         ['}', '"', ']', 'true', 'false'].some(char => prevLineWithoutComments.endsWith(char)) || isNumber(prevLineWithoutComments.at(-1)!)
 
+                    // ignore last } (if after it only whitespaces)
+                    if (
+                        prevLineWithoutComments.endsWith('}') &&
+                        fileContentWithoutComments.split('\n').slice(prevLine.lineNumber).join('\n').slice(prevLineWithoutComments.length).trimEnd() === ''
+                    ) {
+                        continue
+                    }
+
                     if (!isGoodEnding) continue
 
                     const insertPostion = new vscode.Position(prevLine.lineNumber, prevLineWithoutComments.length)

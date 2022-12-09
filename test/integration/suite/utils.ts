@@ -1,6 +1,31 @@
 import * as vscode from 'vscode'
 import stringDedent from 'string-dedent'
 import escapeStringRegexp from 'escape-string-regexp'
+import fs from 'fs'
+import { join } from 'path'
+
+const testingFile = join(__dirname, '../temp.json')
+const testingFileUri = vscode.Uri.file(testingFile)
+
+export const prepareFileEditor = async () => {
+    if (vscode.window.activeTextEditor?.document.uri.toString() === testingFileUri.toString()) {
+        await clearEditorText(vscode.window.activeTextEditor)
+        return
+    }
+    fs.writeFileSync(testingFile, '', 'utf8')
+    await vscode.window.showTextDocument(testingFileUri)
+    // const document = await vscode.workspace.openTextDocument({
+    //     // don't prefil content with \n as vscode won't normalize eol here
+    //     content: '',
+    //     language: 'jsonc',
+    // })
+    // await vscode.window.showTextDocument(document)
+    // if (process.env.CI) {
+    //     await new Promise(resolve => {
+    //         setTimeout(resolve, 1000)
+    //     })
+    // }
+}
 
 export const clearEditorText = async (editor: vscode.TextEditor, resetContent = '') => {
     await new Promise<void>(resolve => {
