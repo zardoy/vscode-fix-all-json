@@ -47,7 +47,7 @@ describe('Quotes on Colon', () => {
                 await new Promise(resolve => {
                     setTimeout(resolve, 60)
                 })
-                expect(getTextNormalizedEol(document)).to.equal(TYPE_CONTENT)
+                expect(getTextNormalizedEol(document)).to.equal(FULL_FIXTURE_UNCHANGED)
             }
         }
         if (title) it(title, cb)
