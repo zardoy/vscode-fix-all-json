@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 
 import { expect } from 'chai'
-import { clearEditorText, getTextNormalizedEol, offsetToPosition, stringWithPositions } from './utils'
+import { clearEditorText, getTextNormalizedEol, offsetToPosition, prepareFileEditor, stringWithPositions } from './utils'
 import dedent from 'string-dedent'
 
 describe('Comma on Enter', () => {
@@ -31,22 +31,11 @@ describe('Comma on Enter', () => {
     const [FULL_FIXTURE_CONTENT, FIXTURE_POSITIONS] = stringWithPositions(FULL_FIXTURE, ['/*|*/', '/*$*/'])
 
     before(done => {
-        void vscode.workspace
-            .openTextDocument({
-                // don't prefil content with \n as vscode won't normalize eol here
-                content: '',
-                language: 'jsonc',
-            })
-            .then(async newDocument => {
-                document = newDocument
-                editor = await vscode.window.showTextDocument(document)
-                if (process.env.CI) {
-                    await new Promise(resolve => {
-                        setTimeout(resolve, 1000)
-                    })
-                }
-            })
-            .then(done)
+        prepareFileEditor().then(async () => {
+            editor = vscode.window.activeTextEditor!
+            document = editor.document
+            done()
+        })
     })
 
     const testPosition = (num: number, offset: number, isExpected: boolean, testFn: any = it) => {
