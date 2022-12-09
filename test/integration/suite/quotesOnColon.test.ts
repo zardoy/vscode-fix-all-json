@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 
 import { expect } from 'chai'
-import { clearEditorText, prepareFileEditor, waitForJsonDiagnostics } from './utils'
+import { clearEditorText, getTextNormalizedEol, prepareFileEditor, waitForJsonDiagnostics } from './utils'
 
 describe('Quotes on Colon', () => {
     let document: vscode.TextDocument
@@ -41,13 +41,13 @@ describe('Quotes on Colon', () => {
                         resolve()
                     })
                 })
-                expect(document.getText()).to.equal(FULL_FIXTURE_EXPECTED)
+                expect(getTextNormalizedEol(document)).to.equal(FULL_FIXTURE_EXPECTED)
             } else {
                 // todo would be better to remove timeout in favor of cleaner solution
                 await new Promise(resolve => {
                     setTimeout(resolve, 60)
                 })
-                expect(document.getText()).to.equal(TYPE_CONTENT)
+                expect(getTextNormalizedEol(document)).to.equal(TYPE_CONTENT)
             }
         }
         if (title) it(title, cb)
@@ -59,6 +59,6 @@ describe('Quotes on Colon', () => {
 
     it('Extension setting disabled', async () => {
         await vscode.workspace.getConfiguration().update('fixAllJson.insertMissingDoubleQuotesOnColon', false, vscode.ConfigurationTarget.Global)
-        await execTest('Double quotes basic case', false)
+        await execTest(undefined, false)
     })
 })
