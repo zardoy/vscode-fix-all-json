@@ -25,7 +25,7 @@ describe('Comma on Enter', () => {
         }/*|*/
         "key7": "value",/*$*/
         // Comment with number 3/*$*/
-    }
+    }/*$*/
     `
 
     const [FULL_FIXTURE_CONTENT, FIXTURE_POSITIONS] = stringWithPositions(FULL_FIXTURE, ['/*|*/', '/*$*/'])
