@@ -76,7 +76,13 @@
                     "markdownDescription": "Insert missing double quotes after \":\""
                 }
             }
-        }
+        },
+        "jsonValidation": [
+            {
+                "fileMatch": "**/settings.json",
+                "url": "./resources/settings.schema.json"
+            }
+        ]
     },
     "activationEvents": [
         "onLanguage:json",

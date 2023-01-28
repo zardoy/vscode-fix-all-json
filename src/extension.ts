@@ -120,7 +120,12 @@ export const activate = () => {
 
     vscode.languages.registerCodeActionsProvider(['json', 'jsonc'], {
         provideCodeActions(document, range, context) {
-            const fixAllRequest = context.only?.contains(vscode.CodeActionKind.SourceFixAll.append('source.fixAll.eslint'))
+            const fixAllRequest = context.only?.contains(vscode.CodeActionKind.SourceFixAll)
+            if (fixAllRequest) {
+                const config = vscode.workspace.getConfiguration('', document).get('editor.codeActionsOnSave')!
+                if (config['source.fixAll.fixAllJson'] === false) return
+            }
+
             if (!fixAllRequest) {
                 if (!getExtensionSetting('enableIndividualCodeActions')) return
                 // ensure propose one individual fix
