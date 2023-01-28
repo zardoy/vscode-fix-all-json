@@ -34,26 +34,15 @@ export const activate = () => {
             : getExtensionSetting('enableFixes')
         const edits: vscode.TextEdit[] = []
         const editCallbackBuilder = (cb: (edit: Pick<vscode.TextEditorEdit, 'insert' | 'delete' | 'replace'>) => void) => {
-            cb({
-                insert(pos, value) {
-                    edits.push({
-                        range: new vscode.Range(pos, pos),
-                        newText: value,
-                    })
-                },
-                delete(range) {
-                    edits.push({
-                        range,
-                        newText: '',
-                    })
-                },
-                replace(location, value) {
-                    edits.push({
-                        range: location instanceof vscode.Position ? new vscode.Range(location, location) : location,
-                        newText: value,
-                    })
-                },
-            })
+            cb(
+                new Proxy({} as any, {
+                    get(target, p, receiver) {
+                        return (...args) => {
+                            edits.push(vscode.TextEdit[p](...args))
+                        }
+                    },
+                }),
+            )
         }
 
         let codeActionTitleOverride: string | undefined
