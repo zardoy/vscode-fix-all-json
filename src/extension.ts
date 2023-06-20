@@ -50,12 +50,9 @@ export const activate = () => {
         editCallbackBuilder(edit => {
             for (const problem of diagnostics) {
                 const pos = problem.range.start
-                const matchJsonProblem = (code: number | undefined, messageFallback: string, skipSourceCheck = false) => {
-                    return (
-                        (code !== undefined && (skipSourceCheck || ['json', 'jsonc'].includes(problem.source ?? '')) && problem.code === code) ||
-                        problem.message === messageFallback
-                    )
-                }
+                const matchJsonProblem = (code: number | undefined, messageFallback: string, skipSourceCheck = false) =>
+                    (code !== undefined && (skipSourceCheck || ['json', 'jsonc'].includes(problem.source ?? '')) && problem.code === code) ||
+                    problem.message === messageFallback
 
                 if (matchJsonProblem(514, 'Expected comma')) {
                     if (!enableFixes.insertMissingCommas) continue
