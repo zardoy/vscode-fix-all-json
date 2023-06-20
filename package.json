@@ -68,7 +68,7 @@
                 "insertMissingCommaOnEnter": {
                     "type": "boolean",
                     "default": true,
-                    "markdownDescription": "Insert missing comma after \"Enter\". Works only if JSON line ends with `}`, `]`, `\"`, `true`/`false` or number"
+                    "markdownDescription": "Insert missing comma after \"Enter\". Works only if JSON line ends with `}`, `]`, `\"`, `true`/`false`, number or null"
                 },
                 "insertMissingDoubleQuotesOnColon": {
                     "type": "boolean",
