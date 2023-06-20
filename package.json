@@ -124,7 +124,7 @@
         "eslint-config-zardoy": "^0.2.15",
         "mocha": "^10.1.0",
         "rimraf": "^3.0.2",
-        "typescript": "^4.5.2"
+        "typescript": "^5.1.3"
     },
     "dependencies": {
         "@vscode/test-electron": "^2.2.0",
