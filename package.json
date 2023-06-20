@@ -68,7 +68,7 @@
                 "insertMissingCommaOnEnter": {
                     "type": "boolean",
                     "default": true,
-                    "markdownDescription": "Insert missing comma after \"Enter\". Works only if JSON line ends with `}`, `]`, `\"`, `true`/`false` or number"
+                    "markdownDescription": "Insert missing comma after \"Enter\". Works only if JSON line ends with `}`, `]`, `\"`, `true`/`false`, number or null"
                 },
                 "insertMissingDoubleQuotesOnColon": {
                     "type": "boolean",
@@ -76,7 +76,13 @@
                     "markdownDescription": "Insert missing double quotes after \":\""
                 }
             }
-        }
+        },
+        "jsonValidation": [
+            {
+                "fileMatch": "**/settings.json",
+                "url": "./resources/settings.schema.json"
+            }
+        ]
     },
     "activationEvents": [
         "onLanguage:json",
@@ -124,10 +130,10 @@
         "eslint-config-zardoy": "^0.2.15",
         "mocha": "^10.1.0",
         "rimraf": "^3.0.2",
-        "typescript": "^4.5.2"
+        "typescript": "^5.1.3"
     },
     "dependencies": {
-        "@vscode/test-electron": "^2.2.0",
+        "@vscode/test-electron": "^2.3.3",
         "@zardoy/utils": "^0.0.10",
         "@zardoy/vscode-utils": "^0.0.46",
         "chai": "^4.3.7",

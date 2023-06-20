@@ -29,13 +29,11 @@ export default () => {
                     if (!prevLineWithoutComments) continue
 
                     const isGoodEnding =
-                        ['}', '"', ']', 'true', 'false'].some(char => prevLineWithoutComments.endsWith(char)) || isNumber(prevLineWithoutComments.at(-1)!)
+                        ['}', '"', ']', 'true', 'false', 'null'].some(char => prevLineWithoutComments.endsWith(char)) ||
+                        isNumber(prevLineWithoutComments.at(-1)!)
 
-                    // ignore last } (if after it only whitespaces)
-                    if (
-                        prevLineWithoutComments.endsWith('}') &&
-                        fileContentWithoutComments.split('\n').slice(prevLine.lineNumber).join('\n').slice(prevLineWithoutComments.length).trimEnd() === ''
-                    ) {
+                    // ignore last line (if after it only whitespaces)
+                    if (fileContentWithoutComments.split('\n').slice(prevLine.lineNumber).join('\n').slice(prevLineWithoutComments.length).trimEnd() === '') {
                         continue
                     }
 

@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "properties": {
+        "editor.codeActionsOnSave": {
+            "properties": {
+                "source.fixAll.fixAllJson": {
+                    "type": "boolean",
+                    "suggestSortText": "z",
+                    "markdownDescription": "Can be used to disable fixAllJson auto fixes when `source.fixAll` is enabled, but not vice versa. Note: you can configure `source.fixAll.fixAllJson` for [json][jsonc] langs"
+                }
+            },
+            "scope": 5
+        }
+    }
+}
