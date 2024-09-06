@@ -11,9 +11,9 @@ Simple & fast VSCode extension for fixing almost all annoying JSON (and even JSO
 To enable problems auto fixing on save (which is super useful), ensure you have the following in your `settings.json` (`> Preferences: Open User Settings (JSON)`):
 
 ```json
-"[json]": {
+"[json][jsonc]": {
   "editor.codeActionsOnSave": ["source.fixAll"]
-},
+}
 ```
 
 ## What fixes
